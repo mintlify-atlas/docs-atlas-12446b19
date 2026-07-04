@@ -63,29 +63,27 @@ Impuesto a pagar     = Aplicar escala progresiva sobre Renta neta imponible
 
 ### Ejemplo de cálculo (persona física, año fiscal 2025–2026)
 
-```json
-{
-  "año_fiscal": "2025-2026",
-  "regimen": "actividades_lucrativas",
-  "entidad": "persona_fisica",
-  "ingresos_brutos_crc": 12500000,
-  "gastos_deducibles": {
-    "mantenimiento": 800000,
-    "depreciacion": 250000,
-    "seguro": 180000,
-    "comisiones_plataforma": 1250000,
-    "administracion": 600000
-  },
-  "total_gastos_deducibles_crc": 3080000,
-  "renta_neta_imponible_crc": 9420000,
-  "calculo_impuesto": {
-    "tramo_0_4461000_al_0pct": 0,
-    "tramo_4461001_6624000_al_10pct": 216300,
-    "tramo_6624001_9420000_al_15pct": 419400,
-    "impuesto_total_crc": 635700
-  }
-}
-```
+El siguiente ejemplo ilustra cómo FiscalHost determina el impuesto para un anfitrión con ingresos anuales de ₡12,500,000 y gastos deducibles de ₡3,080,000:
+
+| Concepto | Monto (₡) |
+|---|---|
+| Ingresos brutos del año fiscal | 12,500,000 |
+| Mantenimiento y reparaciones | −800,000 |
+| Depreciación del inmueble | −250,000 |
+| Seguro de propiedad | −180,000 |
+| Comisiones de plataforma | −1,250,000 |
+| Honorarios de administración | −600,000 |
+| **Total gastos deducibles** | **−3,080,000** |
+| **Renta neta imponible** | **9,420,000** |
+
+Aplicando la escala progresiva sobre ₡9,420,000:
+
+| Tramo | Cálculo | Impuesto parcial (₡) |
+|---|---|---|
+| Hasta ₡4,461,000 (0 %) | ₡4,461,000 × 0 % | 0 |
+| ₡4,461,001 – ₡6,624,000 (10 %) | ₡2,163,000 × 10 % | 216,300 |
+| ₡6,624,001 – ₡9,420,000 (15 %) | ₡2,796,000 × 15 % | 419,400 |
+| **Impuesto total determinado** | | **635,700** |
 
 ## Declaración D-101
 
@@ -106,35 +104,31 @@ Los contribuyentes bajo Actividades Lucrativas están obligados a realizar **pag
 
 ## Configuración del módulo
 
-```json
-{
-  "renta": {
-    "año_fiscal_inicio": "10-01",
-    "año_fiscal_fin": "09-30",
-    "entidad": "persona_fisica",
-    "regimen": "actividades_lucrativas",
-    "categorias_deducibles": [
-      "mantenimiento",
-      "depreciacion",
-      "seguro",
-      "comisiones_plataforma",
-      "administracion",
-      "servicios_publicos"
-    ],
-    "tasa_depreciacion_edificacion": 0.02,
-    "tasa_retencion_capital_inmobiliario": 0.15,
-    "fecha_vencimiento_d101": "12-15"
-  }
-}
-```
+El módulo M2 se configura desde la pantalla **Ajustes → Módulo Renta** dentro de FiscalHost. Durante la configuración inicial el sistema solicita los siguientes datos:
+
+- **Tipo de entidad:** Persona física o persona jurídica. Esta selección determina si se aplica la escala progresiva (0 %–25 %) o la tasa corporativa (30 %).
+- **Régimen tributario:** Rentas de Capital Inmobiliario (15 % retención definitiva) o Actividades Lucrativas (escala progresiva sobre renta neta). Si tienes dudas sobre cuál régimen corresponde a tu actividad, consulta a un contador autorizado.
+- **Categorías de gastos deducibles:** El anfitrión activa las categorías que aplican a su operación (mantenimiento, depreciación, seguros, comisiones de plataforma, administración, servicios públicos). Las categorías desactivadas no se incluyen en el cálculo de la renta neta.
+- **Tasa de depreciación:** Para edificaciones, la ley establece el 2 % anual. FiscalHost usa este valor por defecto, pero permite ajustarlo si el activo cuenta con una tasa diferente reconocida por Hacienda.
+- **Fecha de inicio del año fiscal:** Precargada como 1 de octubre; no requiere modificación salvo cambio normativo.
+
+### Resumen de opciones de configuración
+
+| Opción | Descripción |
+|---|---|
+| Tipo de entidad | Persona física o jurídica (determina la escala o tasa aplicable) |
+| Régimen tributario | Capital Inmobiliario (15 %) o Actividades Lucrativas (escala progresiva) |
+| Categorías de gastos deducibles | Tipos de gasto que reducen la base imponible |
+| Tasa de depreciación de edificaciones | Porcentaje anual de desgaste (predeterminado: 2 %) |
+| Fecha de vencimiento D-101 | Día y mes de la declaración anual (predeterminado: 15 de diciembre) |
 
 ## Recursos relacionados
 
 <CardGroup cols={2}>
-  <Card title="Módulo IVA (M1)" icon="percent" href="/modules/iva-vat">
+  <Card title="Módulo IVA (M1)" icon="percent" href="modules/iva-vat">
     Consulta cómo el módulo IVA calcula el 13 % de VAT mensual y se integra con el módulo de Renta.
   </Card>
-  <Card title="Guía de cálculos tributarios" icon="calculator" href="/guides/tax-calculations">
+  <Card title="Guía de cálculos tributarios" icon="calculator" href="guides/tax-calculations">
     Paso a paso sobre cómo FiscalHost aplica fórmulas de renta, brackets y deducciones.
   </Card>
 </CardGroup>

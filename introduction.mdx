@@ -1,7 +1,7 @@
 ---
-title: "FiscalHost Inteligente CR: Asistente Fiscal para Anfitriones Vacacionales"
+title: "FiscalHost Inteligente CR: Gestión Fiscal Vacacional CR"
 sidebarTitle: "Introducción"
-description: "Conoce qué es FiscalHost Inteligente CR, a quién está dirigido y cómo automatiza el cumplimiento tributario en Costa Rica."
+description: "Conoce qué es FiscalHost Inteligente CR, a quién está dirigido y cómo automatiza el cumplimiento fiscal para anfitriones en Costa Rica."
 ---
 
 FiscalHost Inteligente CR es un sistema de gestión fiscal diseñado específicamente para anfitriones de alquileres vacacionales en Costa Rica. Si publicas propiedades en plataformas como Airbnb, Booking.com o VRBO, este sistema centraliza el seguimiento de tus ingresos, automatiza el cálculo de impuestos y te mantiene al día con las obligaciones tributarias del Ministerio de Hacienda — sin necesidad de ser experto en contabilidad fiscal costarricense.
@@ -39,7 +39,7 @@ El sistema está organizado en cinco módulos funcionales independientes, cada u
 | **M4** | Reportes | Generación y exportación de reportes fiscales consolidados por periodo |
 | **M5** | Importación | Importación y normalización de datos de ingresos desde archivos CSV |
 
-Cada módulo expone su propia interfaz y puede operar de forma autónoma, aunque el flujo de datos principal conecta M5 → M1/M2 → M4 → M3 para el ciclo completo de procesamiento fiscal.
+Cada módulo puede operar de forma autónoma, aunque el flujo de datos principal conecta M5 → M1/M2 → M4 → M3 para el ciclo completo de procesamiento fiscal.
 
 ## Explora más
 
@@ -56,14 +56,14 @@ Cada módulo expone su propia interfaz y puede operar de forma autónoma, aunque
     icon="sitemap"
     href="/architecture"
   >
-    Conoce el diseño modular M1–M5, el flujo de datos y el pipeline de CI/CD.
+    Conoce el diseño modular M1–M5, el flujo de datos y la estrategia de desarrollo del proyecto.
   </Card>
   <Card
     title="Módulo IVA (M1)"
     icon="calculator"
     href="/modules/iva-vat"
   >
-    Documentación técnica del módulo de cálculo del IVA al 13% y generación D-104.
+    Documentación del módulo de cálculo del IVA al 13% y generación de datos para el D-104.
   </Card>
   <Card
     title="Reglas Tributarias CR"

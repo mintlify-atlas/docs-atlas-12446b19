@@ -1,41 +1,18 @@
 ---
-title: "Get Started with FiscalHost Inteligente CR"
+title: "Primeros Pasos en FiscalHost Inteligente CR"
 sidebarTitle: "Inicio Rápido"
-description: "Configure FiscalHost Inteligente CR and run your first tax calculation in under 10 minutes with this step-by-step guide."
+description: "Configura tu perfil fiscal, registra ingresos de tus alquileres y genera tu primer reporte de cumplimiento de IVA en menos de 10 minutos."
 ---
 
-Esta guía te lleva desde cero hasta tu primer cálculo de IVA funcional en FiscalHost Inteligente CR. Siguiendo los pasos a continuación podrás configurar tu perfil fiscal, registrar ingresos y generar un reporte de cumplimiento en menos de 10 minutos. Los pasos aplican tanto si accedes mediante la interfaz web como si ejecutas el sistema en un entorno de desarrollo local.
+Esta guía te lleva desde cero hasta tu primer cálculo de IVA funcional en FiscalHost Inteligente CR. Siguiendo los pasos a continuación podrás configurar tu perfil fiscal, registrar ingresos y generar un reporte de cumplimiento en menos de 10 minutos, todo desde la interfaz web del sistema.
 
 <Warning>
   Antes de comenzar, asegúrate de que tu cédula jurídica o cédula física (según corresponda) esté correctamente inscrita en el Registro Tributario del Ministerio de Hacienda de Costa Rica (ATV — Administración Tributaria Virtual). Una cédula no inscrita o con actividades económicas incorrectamente declaradas puede generar inconsistencias en los cálculos y problemas al momento de presentar tus declaraciones.
 </Warning>
 
 <Steps>
-  <Step title="Instala o accede al sistema">
-    FiscalHost Inteligente CR puede ejecutarse como aplicación web o en un entorno de desarrollo local.
-
-    **Acceso vía interfaz web:**
-    Navega a la URL de tu instancia desplegada e inicia sesión con las credenciales de tu cuenta de anfitrión. Si es tu primer acceso, completa el flujo de registro para crear tu cuenta.
-
-    **Entorno de desarrollo local:**
-    Clona el repositorio e instala las dependencias del proyecto:
-
-    ```bash
-    # Clona el repositorio (requiere acceso al repositorio privado)
-    git clone https://github.com/Acevedo26/FiscalHost-Inteligente-CR-.git
-    cd FiscalHost-Inteligente-CR-
-
-    # Instala dependencias
-    npm install
-
-    # Copia las variables de entorno de ejemplo
-    cp .env.example .env
-
-    # Inicia el servidor de desarrollo
-    npm run dev
-    ```
-
-    La aplicación estará disponible en `http://localhost:3000` por defecto.
+  <Step title="Accede al sistema">
+    FiscalHost Inteligente CR funciona como aplicación web. Para comenzar, navega a la URL de tu instancia e inicia sesión con las credenciales de tu cuenta de anfitrión. Si es tu primer acceso, completa el flujo de registro para crear tu cuenta proporcionando tu dirección de correo electrónico y una contraseña segura.
 
     <Tip>
       Si ya tienes un archivo CSV con el historial de ingresos exportado desde Airbnb o Booking.com, tenlo listo para el Paso 3. El módulo de importación M5 puede procesar ese archivo directamente y ahorrarte el ingreso manual de cada transacción.
@@ -45,68 +22,38 @@ Esta guía te lleva desde cero hasta tu primer cálculo de IVA funcional en Fisc
   <Step title="Configura tu perfil fiscal">
     El perfil fiscal es el punto de partida de todos los cálculos. Contiene los datos tributarios de tu actividad de alquiler vacacional tal como están registrados ante Hacienda.
 
-    Navega a **Configuración → Perfil Fiscal** y completa los campos requeridos. A continuación se muestra la estructura de configuración que el sistema utiliza internamente:
+    Navega a **Configuración → Perfil Fiscal** y completa los campos requeridos:
 
-    ```json
-    {
-      "perfilFiscal": {
-        "cedula": "3-101-XXXXXX",
-        "tipoContribuyente": "persona_juridica",
-        "nombreComercial": "Cabinas Vista al Mar S.R.L.",
-        "actividadEconomica": {
-          "codigo": "5510",
-          "descripcion": "Alojamiento en hoteles, apart-hoteles y residencias turísticas"
-        },
-        "regimenTributario": "tradicional",
-        "periodoFiscal": {
-          "inicio": "01-10",
-          "fin": "30-09",
-          "tipo": "octubre_setiembre"
-        },
-        "contacto": {
-          "correo": "admin@cabinasvistamar.cr",
-          "telefono": "+506 8888-0000"
-        },
-        "configuracionIVA": {
-          "tasa": 0.13,
-          "aplicaCredito": true,
-          "metodoCreditoProporcional": false
-        }
-      }
-    }
-    ```
+    | Campo | Descripción | Ejemplo |
+    |-------|-------------|---------|
+    | **Cédula** | Cédula jurídica (persona jurídica) o cédula física (persona física con actividad lucrativa) | `3-101-XXXXXX` |
+    | **Tipo de contribuyente** | Persona física o persona jurídica según tu inscripción ante Hacienda | Persona jurídica |
+    | **Nombre comercial** | Nombre de tu negocio de alquiler vacacional | Cabinas Vista al Mar S.R.L. |
+    | **Código de actividad económica** | Código CIIU según el Clasificador de Actividades Económicas de Hacienda. Para alquileres vacacionales de corto plazo, el código más común es `5510` | `5510` |
+    | **Régimen tributario** | **Tradicional** (declaración mensual de IVA) o **Simplificado** (factor fijo sobre compras). La mayoría de anfitriones con ingresos regulares usan el régimen tradicional | Tradicional |
+    | **Período fiscal** | El período fiscal estándar en Costa Rica va de octubre a setiembre. Solo cámbialo si cuentas con autorización expresa de Hacienda | Octubre–Setiembre |
+    | **Correo de contacto** | Dirección de correo para recibir alertas de vencimiento del módulo M3 | admin@cabinasvistamar.cr |
 
-    Los campos clave que debes verificar son:
-
-    - **`cedula`** — Cédula jurídica (persona jurídica) o cédula física (persona física con actividad lucrativa).
-    - **`actividadEconomica.codigo`** — Código CIIU de tu actividad según el Clasificador de Actividades Económicas de Hacienda. Para alquileres vacacionales de corto plazo, el código `5510` es el más común.
-    - **`regimenTributario`** — `"tradicional"` (declaración mensual de IVA) o `"simplificado"` (factor fijo sobre compras). La mayoría de anfitriones con ingresos regulares usan el régimen tradicional.
-    - **`periodoFiscal.tipo`** — El período fiscal estándar en Costa Rica va de octubre a setiembre (`octubre_setiembre`). Solo cámbialo si tienes una autorización expresa de Hacienda para un período diferente.
+    Una vez completados todos los campos, haz clic en **Guardar perfil** para confirmar la configuración.
 
     <Warning>
-      El campo `regimenTributario` afecta directamente la fórmula de cálculo utilizada por el módulo M1 (IVA) y M2 (Renta). Si cambias de régimen después de haber registrado ingresos, deberás recalcular los períodos anteriores manualmente.
+      El régimen tributario seleccionado afecta directamente la fórmula de cálculo utilizada por el módulo M1 (IVA) y M2 (Renta). Si cambias de régimen después de haber registrado ingresos, deberás recalcular los períodos anteriores de forma manual.
     </Warning>
   </Step>
 
   <Step title="Registra tu primer ingreso de alquiler">
     Con el perfil fiscal guardado, puedes registrar ingresos de dos formas:
 
-    **Registro manual:** Navega a **Ingresos → Nuevo Ingreso** y completa el formulario:
+    **Registro manual:** Navega a **Ingresos → Nuevo Ingreso** y completa el formulario con los siguientes datos:
 
-    ```json
-    {
-      "ingreso": {
-        "fecha": "2026-03-15",
-        "plataforma": "Airbnb",
-        "descripcion": "Reserva #HM4X9B — Cabaña Lomas Verdes",
-        "montoBase": 85000,
-        "moneda": "CRC",
-        "noches": 3,
-        "huespedes": 2,
-        "estado": "confirmado"
-      }
-    }
-    ```
+    | Campo | Descripción |
+    |-------|-------------|
+    | **Fecha** | Fecha de la reserva o del cobro efectivo |
+    | **Plataforma** | Airbnb, Booking.com, VRBO u otro |
+    | **Descripción** | Número de reserva y nombre de la propiedad |
+    | **Monto base** | Monto del ingreso en colones (CRC) antes de impuestos |
+    | **Noches** | Número de noches de la reserva |
+    | **Estado** | Confirmado, pendiente o cancelado |
 
     **Importación desde CSV (recomendado para múltiples registros):** Navega a **Importar → Cargar CSV**, selecciona tu archivo de exportación de Airbnb o Booking.com y mapea las columnas al formato esperado. El módulo M5 normalizará automáticamente los campos de fecha, monto y descripción.
 

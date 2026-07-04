@@ -25,55 +25,22 @@ La siguiente tabla lista todas las obligaciones fiscales que M3 rastrea de maner
 
 ## Configuración de alertas
 
-Las alertas se configuran en la sección `alertas` del archivo `fiscal_config.json`. Puedes definir cuántos días antes de cada vencimiento deseas recibir notificaciones y por qué canales:
+Las alertas se configuran desde la pantalla **Ajustes → Alertas y Notificaciones** dentro de FiscalHost. El sistema permite personalizar los siguientes aspectos para cada tipo de obligación fiscal:
 
-```json
-{
-  "alertas": {
-    "activas": true,
-    "canales": ["email", "push", "sms"],
-    "destinatarios": [
-      "anfitrion@ejemplo.com",
-      "+50688887777"
-    ],
-    "reglas": [
-      {
-        "formulario": "D-104",
-        "dias_anticipacion": [10, 5, 2, 1],
-        "canales_override": null
-      },
-      {
-        "formulario": "D-101",
-        "dias_anticipacion": [30, 15, 7, 2],
-        "canales_override": ["email", "sms"]
-      },
-      {
-        "formulario": "pago_a_cuenta",
-        "dias_anticipacion": [15, 7, 3],
-        "canales_override": null
-      },
-      {
-        "formulario": "D-151",
-        "dias_anticipacion": [30, 10, 3],
-        "canales_override": null
-      }
-    ],
-    "zona_horaria": "America/Costa_Rica"
-  }
-}
-```
+- **Canales de notificación:** Correo electrónico, notificación push (aplicación móvil o extensión de navegador) y SMS. Puedes activar uno o varios canales simultáneamente.
+- **Destinatarios:** Dirección de correo electrónico y/o número de teléfono celular a los que se enviarán las alertas. Es posible agregar más de un destinatario para que el anfitrión y su contador reciban los recordatorios.
+- **Días de anticipación por formulario:** Para cada declaración, se define una lista de umbrales en días (por ejemplo, 30, 15, 7 y 2 días antes del vencimiento). Cuando la fecha actual alcanza uno de estos umbrales, se despacha la alerta correspondiente.
+- **Canales específicos por formulario:** Es posible sobreescribir los canales globales para una obligación concreta. Por ejemplo, el D-101 anual puede configurarse para enviar alertas por correo y SMS, mientras que el D-104 mensual usa solo push.
+- **Zona horaria:** Toda la lógica de vencimientos opera en la zona horaria de Costa Rica (UTC−6), lo que garantiza que los recordatorios lleguen en el momento correcto independientemente del huso horario del dispositivo del anfitrión.
 
-### Parámetros de configuración
+### Umbrales de anticipación recomendados
 
-| Parámetro | Tipo | Descripción |
+| Formulario | Días de anticipación sugeridos | Justificación |
 |---|---|---|
-| `activas` | `boolean` | Habilita o deshabilita todas las alertas del sistema |
-| `canales` | `array` | Canales globales: `email`, `push`, `sms` |
-| `destinatarios` | `array` | Lista de correos y/o números de teléfono |
-| `reglas[].formulario` | `string` | Identificador del formulario o tipo de obligación |
-| `reglas[].dias_anticipacion` | `array` | Días antes del vencimiento en que se dispara cada alerta |
-| `reglas[].canales_override` | `array \| null` | Canales específicos para esta regla; `null` usa los globales |
-| `zona_horaria` | `string` | Zona horaria para el cálculo de vencimientos (IANA) |
+| D-104 (mensual) | 10, 5, 2, 1 | Ciclo corto; recordatorio frecuente cerca del vencimiento |
+| D-101 (anual) | 30, 15, 7, 2 | Requiere recopilar comprobantes del año completo |
+| Pago a cuenta (trimestral) | 15, 7, 3 | Permite planificar la liquidez antes del pago |
+| D-151 (anual) | 30, 10, 3 | Declaración informativa con volumen alto de datos |
 
 ## Flujo de una alerta
 
@@ -82,7 +49,7 @@ Las alertas se configuran en la sección `alertas` del archivo `fiscal_config.js
     Al iniciar cada período mensual, M3 genera la lista de vencimientos aplicables según los módulos activos. Si M1 está habilitado, carga los vencimientos D-104 del mes. Si M2 está habilitado, carga pagos a cuenta y el D-101 anual.
   </Step>
   <Step title="Evaluación diaria de proximidad">
-    Cada día a las **6:00 a.m. (hora de Costa Rica)**, el sistema calcula la diferencia en días entre la fecha actual y cada vencimiento pendiente. Compara ese valor contra los umbrales `dias_anticipacion` definidos en la configuración.
+    Cada día a las **6:00 a.m. (hora de Costa Rica)**, el sistema calcula la diferencia en días entre la fecha actual y cada vencimiento pendiente. Compara ese valor contra los umbrales de anticipación definidos en la configuración.
   </Step>
   <Step title="Generación del mensaje de alerta">
     Cuando se alcanza un umbral, el sistema compone el mensaje de notificación con el nombre del formulario, la fecha de vencimiento exacta, el monto estimado a pagar (si ya fue calculado por M1 o M2), y un enlace directo al portal VET de Hacienda.
@@ -125,10 +92,10 @@ El Ministerio de Hacienda puede modificar las fechas de vencimiento mediante res
 ## Recursos relacionados
 
 <CardGroup cols={2}>
-  <Card title="Módulo de Reportes (M4)" icon="file-chart-line" href="/modules/reports">
+  <Card title="Módulo de Reportes (M4)" icon="file-chart-line" href="modules/reports">
     Genera reportes fiscales listos para presentar junto con tus declaraciones.
   </Card>
-  <Card title="Guía de gestión de alertas" icon="bell" href="/guides/managing-alerts">
+  <Card title="Guía de gestión de alertas" icon="bell" href="guides/managing-alerts">
     Aprende a personalizar canales, umbrales y destinatarios de notificaciones en FiscalHost.
   </Card>
 </CardGroup>

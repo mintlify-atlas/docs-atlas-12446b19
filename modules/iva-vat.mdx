@@ -63,72 +63,36 @@ La **Declaración Jurada del Impuesto al Valor Agregado (D-104)** es el formular
 
 ## Configuración del módulo
 
-El módulo M1 se configura a través del archivo `fiscal_config.json` en la raíz del proyecto. Las categorías de ingreso y su tratamiento fiscal se declaran en la sección `iva`:
+El módulo M1 se configura desde la pantalla **Ajustes → Módulo IVA** dentro de FiscalHost. Durante la configuración inicial, el sistema solicita los siguientes datos:
 
-```json
-{
-  "iva": {
-    "tasa_general": 0.13,
-    "periodo": "mensual",
-    "categorias": [
-      {
-        "nombre": "Alojamiento vacacional",
-        "codigo": "ALQ",
-        "gravado": true,
-        "tasa": 0.13
-      },
-      {
-        "nombre": "Servicio de limpieza (incluido en tarifa)",
-        "codigo": "LIMP",
-        "gravado": false,
-        "tasa": 0.00
-      },
-      {
-        "nombre": "Desayuno o alimentación",
-        "codigo": "ALM",
-        "gravado": true,
-        "tasa": 0.13
-      }
-    ],
-    "umbral_inscripcion_anual_crc": 3700000,
-    "dia_vencimiento_declaracion": 15
-  }
-}
-```
+- **Tasa de IVA:** Precargada en 13 % conforme a la ley vigente. Solo se modifica si Hacienda publica una reforma de tasa.
+- **Categorías de ingreso y su tratamiento fiscal:** El anfitrión define si cada tipo de ingreso (alojamiento, limpieza incluida en tarifa, desayuno, servicios adicionales) está gravado al 13 % o exento. Estas categorías se aplican automáticamente al clasificar las transacciones importadas.
+- **Umbral de inscripción:** FiscalHost muestra una alerta cuando los ingresos acumulados en el año se acercan al umbral de ₡3,700,000, recordando al anfitrión la obligación de inscribirse como contribuyente de IVA si aún no lo ha hecho.
+- **Fecha de vencimiento:** El módulo utiliza el día 15 de cada mes como fecha límite predeterminada para la declaración D-104 y la comparte con el módulo de Alertas (M3) para el envío de recordatorios.
 
-### Opciones de configuración
+### Resumen de opciones de configuración
 
-| Parámetro | Tipo | Descripción |
-|---|---|---|
-| `tasa_general` | `float` | Tasa de IVA aplicable (por defecto `0.13`) |
-| `periodo` | `string` | Periodicidad del cálculo (`mensual`) |
-| `categorias[].gravado` | `boolean` | `true` si la categoría tributa IVA |
-| `categorias[].tasa` | `float` | Tasa específica de la categoría |
-| `umbral_inscripcion_anual_crc` | `number` | Umbral de inscripción obligatoria en colones |
-| `dia_vencimiento_declaracion` | `number` | Día límite de presentación mensual |
+| Opción | Descripción |
+|---|---|
+| Tasa de IVA | Porcentaje aplicable a ingresos gravados (predeterminado: 13 %) |
+| Categorías de ingreso | Lista de tipos de ingreso con su clasificación fiscal (gravado / exento) |
+| Umbral de inscripción anual | Monto en colones a partir del cual es obligatoria la inscripción como contribuyente |
+| Día de vencimiento mensual | Día del mes en que vence la declaración D-104 (predeterminado: día 15) |
 
-## Salida del módulo
+## Resumen del período calculado
 
-Tras procesar las transacciones de un período, M1 produce un objeto de resultado con la siguiente estructura:
+Al finalizar el procesamiento de un mes, FiscalHost presenta en pantalla el resumen del período con los siguientes valores:
 
-```json
-{
-  "periodo": "2026-05",
-  "ingresos_totales_crc": 850000,
-  "ingresos_exentos_crc": 50000,
-  "base_imponible_crc": 800000,
-  "iva_debito_fiscal_crc": 104000,
-  "iva_credito_fiscal_crc": 18000,
-  "iva_neto_a_pagar_crc": 86000,
-  "fecha_vencimiento": "2026-06-15",
-  "declaracion_d104": {
-    "casilla_101": 800000,
-    "casilla_301": 104000,
-    "casilla_401": 18000,
-    "casilla_501": 86000
-  }
-}
-```
+| Campo | Descripción |
+|---|---|
+| Período | Mes y año procesado (ej. Mayo 2026) |
+| Ingresos totales | Suma de todos los ingresos del mes |
+| Ingresos exentos | Ingresos no sujetos al 13 % |
+| Base imponible | Ingresos totales menos ingresos exentos |
+| Débito fiscal (casilla 301) | IVA generado sobre ventas gravadas |
+| Crédito fiscal (casilla 401) | IVA pagado en facturas de gastos deducibles |
+| IVA neto a pagar (casilla 501) | Débito fiscal menos crédito fiscal |
+| Fecha de vencimiento | Día 15 del mes siguiente al período declarado |
 
 <Warning>
 Las declaraciones D-104 presentadas después del día 15 del mes siguiente generan **intereses y multas** calculados por el Ministerio de Hacienda. La multa por mora comienza en el 1 % mensual sobre el impuesto no pagado, más intereses legales. FiscalHost Inteligente CR incluye el módulo de Alertas (M3) para notificarte con anticipación, pero la responsabilidad de la presentación es del contribuyente.
@@ -141,10 +105,10 @@ Conserva todas las **facturas electrónicas de gastos** (servicios públicos, su
 ## Recursos relacionados
 
 <CardGroup cols={2}>
-  <Card title="Guía de cálculos tributarios" icon="calculator" href="/guides/tax-calculations">
+  <Card title="Guía de cálculos tributarios" icon="calculator" href="guides/tax-calculations">
     Aprende cómo FiscalHost aplica las fórmulas de IVA y renta paso a paso.
   </Card>
-  <Card title="Reglas fiscales de Costa Rica" icon="book" href="/reference/tax-rules-cr">
+  <Card title="Reglas fiscales de Costa Rica" icon="book" href="reference/tax-rules-cr">
     Referencia completa de la normativa tributaria costarricense aplicable a alquileres vacacionales.
   </Card>
 </CardGroup>

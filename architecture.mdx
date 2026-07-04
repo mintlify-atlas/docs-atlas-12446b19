@@ -1,7 +1,7 @@
 ---
-title: "System Architecture: FiscalHost Inteligente CR Module Design"
+title: "Arquitectura del Sistema FiscalHost Inteligente CR"
 sidebarTitle: "Arquitectura"
-description: "Explore the modular M1–M5 architecture of FiscalHost Inteligente CR, including data flow, module responsibilities, and the CI/CD pipeline."
+description: "Arquitectura modular M1–M5 de FiscalHost Inteligente CR: flujo de procesamiento fiscal, responsabilidades por módulo y estrategia Git del equipo."
 ---
 
 FiscalHost Inteligente CR está construido sobre una arquitectura modular de cinco componentes independientes pero interconectados. Cada módulo (M1–M5) encapsula una responsabilidad fiscal bien delimitada, lo que permite desarrollar, probar y desplegar cambios en una parte del sistema sin afectar a las demás. Esta separación es especialmente importante en un sistema fiscal donde la corrección de los cálculos debe poder verificarse de forma aislada antes de integrarse al flujo completo.
@@ -115,53 +115,17 @@ main ─────────────────────────
 
 ## Pipeline de CI/CD con GitHub Actions
 
-Cada push a `main` o `develop`, y cada Pull Request abierto contra estas ramas, dispara automáticamente el pipeline de integración y despliegue continuo:
+Cada push a `main` o `develop`, y cada Pull Request abierto contra estas ramas, dispara automáticamente el pipeline de integración y despliegue continuo configurado mediante GitHub Actions.
 
-```yaml
-# .github/workflows/ci-cd.yml (estructura representativa)
-name: CI/CD Pipeline
+El pipeline ejecuta tres etapas en secuencia:
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+1. **Compilación** — Se verifica que el proyecto compila correctamente en un entorno limpio sobre Ubuntu. Si la compilación falla, las etapas siguientes no se ejecutan.
+2. **Pruebas unitarias e integración** — Se ejecuta la suite de pruebas completa con reporte de cobertura. Esta etapa depende del éxito de la compilación y garantiza que ningún cambio rompa los cálculos fiscales existentes antes de integrarse a las ramas protegidas.
+3. **Despliegue** — Solo se activa en pushes directos a `main` (no en `develop` ni en Pull Requests). Publica automáticamente la versión estable al entorno de producción una vez que las pruebas han pasado.
 
-jobs:
-  build:
-    name: Compilación
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Instalar dependencias
-        run: npm ci
-      - name: Compilar proyecto
-        run: npm run build
-
-  test:
-    name: Pruebas unitarias e integración
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Instalar dependencias
-        run: npm ci
-      - name: Ejecutar suite de pruebas
-        run: npm test -- --coverage
-      - name: Publicar reporte de cobertura
-        uses: codecov/codecov-action@v4
-
-  deploy:
-    name: Despliegue
-    needs: test
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Desplegar a producción
-        run: npm run deploy
-```
-
-Los tres jobs se ejecutan en secuencia: **build → test → deploy**. El deploy solo se activa en pushes a `main`, no en `develop` ni en Pull Requests.
+<Note>
+  El pipeline actúa como control de calidad obligatorio: los Pull Requests hacia `main` y `develop` deben superar todos los checks de CI/CD antes de poder fusionarse, incluso si ya cuentan con la aprobación de un revisor del equipo.
+</Note>
 
 ## Gestión del proyecto con GitHub Projects
 

@@ -129,20 +129,6 @@ The pagos a cuenta (advance payments made during the year) are credited against 
     | 2,500,000 | 325,000 | 60,000 | 265,000 |
 
     **Declaration:** Filed on form **D-104** via ATV by the last business day of the month following the period.
-
-    ```json
-    {
-      "liquidacion": {
-        "tipo": "IVA",
-        "periodo": "2026-06",
-        "ingresoBruto": 500000,
-        "ivaRepercutido": 65000,
-        "ivaSoportado": 15000,
-        "ivaAPagar": 50000,
-        "formulario": "D-104"
-      }
-    }
-    ```
   </Tab>
   <Tab title="Renta – Cálculo Anual">
     Income tax is calculated once per fiscal year on your net taxable income after deductions. Advance payments (pagos a cuenta) made quarterly throughout the year are credited against the final liability.
@@ -166,23 +152,6 @@ The pagos a cuenta (advance payments made during the year) are credited against 
     | 12,000,000 | 1,800,000 | 1,550,000 |
 
     **Declaration:** Filed on form **D-101** via ATV by December 15 each year.
-
-    ```json
-    {
-      "liquidacion": {
-        "tipo": "Renta",
-        "periodoFiscal": "2025-10-01/2026-09-30",
-        "ingresoBruto": 6000000,
-        "deducciones": 1200000,
-        "rentaNetaImponible": 4800000,
-        "tasaAplicada": 0.15,
-        "impuestoBruto": 720000,
-        "pagosACuenta": 250000,
-        "impuestoAPagar": 470000,
-        "formulario": "D-101"
-      }
-    }
-    ```
   </Tab>
 </Tabs>
 
@@ -190,20 +159,7 @@ The pagos a cuenta (advance payments made during the year) are credited against 
 
 ### Mixed CRC/USD income
 
-If you receive rental payments in US dollars (common on international platforms like Airbnb), FiscalHost Inteligente CR converts each transaction to colones using the **tipo de cambio de referencia del BCCR** on the date the income was received. The conversion is recorded at the transaction level so you always have an auditable CRC equivalent.
-
-```json
-{
-  "transaccion": {
-    "fecha": "2026-06-12",
-    "monedaOriginal": "USD",
-    "montoUSD": 320.00,
-    "tipoCambio": 528.50,
-    "montoCRC": 169120,
-    "fuenteTipoCambio": "BCCR_REFERENCIA"
-  }
-}
-```
+If you receive rental payments in US dollars (common on international platforms like Airbnb), FiscalHost Inteligente CR converts each transaction to colones using the **tipo de cambio de referencia del BCCR** on the date the income was received. The conversion is recorded at the transaction level so you always have an auditable CRC equivalent. For example, a booking of USD 320.00 received on a day when the BCCR reference rate is ₡528.50 per dollar is recorded as ₡169,120 in the transaction history. You can review the exchange rate applied to any individual transaction by clicking on it in **Transacciones → Detalle**.
 
 ### Partial-month rentals
 

@@ -32,13 +32,13 @@ This page collects the most common questions from vacation rental hosts using Fi
     - **Comisiones de plataformas**: cargos cobrados por Airbnb, Booking.com, VRBO u otras plataformas de distribución por intermediar la reserva.
     - **Gastos de administración**: honorarios pagados a administradores o gestores de la propiedad.
 
-    Cada deducción debe estar respaldada por **comprobantes electrónicos (facturas electrónicas)** emitidos por proveedores registrados en el sistema de facturación del Ministerio de Hacienda. FiscalHost Inteligente CR permite registrar y categorizar estos comprobantes, y los incluye en el reporte de renta cuando la opción `incluir_deducciones` está activada en la configuración.
+    Cada deducción debe estar respaldada por **comprobantes electrónicos (facturas electrónicas)** emitidos por proveedores registrados en el sistema de facturación del Ministerio de Hacienda. FiscalHost Inteligente CR permite registrar y categorizar estos comprobantes, y los incluye en el reporte de renta cuando la opción **Incluir deducciones** está activada en la configuración de reportes.
   </Accordion>
 
   <Accordion title="¿Debo declarar IVA si estoy en Régimen Simplificado?">
     Sí, pero con diferencias importantes respecto al Régimen Tradicional. Los contribuyentes acogidos al **Régimen Simplificado** también están sujetos al IVA en sus actividades de alquiler vacacional, sin embargo, el mecanismo de liquidación es distinto: en lugar de declarar el IVA débito y acreditar el IVA crédito mes a mes, los contribuyentes del Régimen Simplificado aplican **factores de estimación objetiva** establecidos por la Dirección General de Tributación para determinar el impuesto a pagar.
 
-    Además, bajo el Régimen Simplificado, el Impuesto sobre la Renta se maneja mediante una **retención definitiva del 15 % sobre los ingresos brutos**, sin posibilidad de deducir gastos. Esto simplifica la carga administrativa, pero puede resultar más oneroso si los gastos de la propiedad son significativos. FiscalHost Inteligente CR adapta sus cálculos al régimen que hayas configurado en el campo `regimen` de tu perfil fiscal.
+    Además, bajo el Régimen Simplificado, el Impuesto sobre la Renta se maneja mediante una **retención definitiva del 15 % sobre los ingresos brutos**, sin posibilidad de deducir gastos. Esto simplifica la carga administrativa, pero puede resultar más oneroso si los gastos de la propiedad son significativos. FiscalHost Inteligente CR adapta sus cálculos al régimen que hayas configurado en el ajuste **Régimen tributario** dentro de tu perfil fiscal.
   </Accordion>
 </AccordionGroup>
 
@@ -61,7 +61,7 @@ This page collects the most common questions from vacation rental hosts using Fi
 
     Ejemplo de una fila válida:
 
-    ```
+    ```text
     fecha,monto,moneda,plataforma,propiedad_id,descripcion
     2025-11-15,350.00,USD,airbnb,prop-001,Reserva 3 noches - Nov 2025
     ```
@@ -89,7 +89,7 @@ This page collects the most common questions from vacation rental hosts using Fi
     - Número de filas con errores.
     - Detalle de cada error: número de fila, columna afectada y descripción del problema.
 
-    Puedes corregir las filas con errores directamente en tu archivo CSV y volver a importar únicamente las filas corregidas, sin necesidad de reimportar todo el archivo. El sistema detecta automáticamente duplicados basándose en la combinación de `fecha`, `monto`, `plataforma` y `propiedad_id`.
+    Puedes corregir las filas con errores directamente en tu archivo CSV y volver a importar únicamente las filas corregidas, sin necesidad de reimportar todo el archivo. El sistema detecta automáticamente duplicados basándose en la combinación de fecha, monto, plataforma e ID de propiedad.
   </Accordion>
 </AccordionGroup>
 
@@ -101,17 +101,7 @@ This page collects the most common questions from vacation rental hosts using Fi
   <Accordion title="¿Con cuánta anticipación envía alertas el sistema?">
     El sistema de alertas es **completamente configurable**. Por defecto, FiscalHost Inteligente CR envía notificaciones con **15, 7, 3 y 1 días de antelación** antes de cada vencimiento fiscal (declaración D-104 mensual, pagos a cuenta D-150, declaración D-101 anual).
 
-    Puedes personalizar estos intervalos modificando el campo `dias_anticipacion` en la sección `alertas` de tu configuración. Por ejemplo, si prefieres recibir solo dos alertas por vencimiento:
-
-    ```json
-    "alertas": {
-      "dias_anticipacion": [7, 1],
-      "canales": ["in-app", "email"],
-      "activo": true
-    }
-    ```
-
-    Las alertas pueden recibirse por notificación **in-app** (dentro del sistema), por **correo electrónico**, o por ambos canales simultáneamente, según lo configures. Si deseas desactivar las alertas temporalmente, establece `"activo": false`.
+    Puedes personalizar estos intervalos desde la sección **Alertas** de la configuración del sistema, estableciendo los días de anticipación que prefieras. Por ejemplo, si quieres recibir solo dos recordatorios por vencimiento, puedes configurar únicamente los valores 7 y 1. Las notificaciones pueden entregarse por **notificación in-app** (dentro del sistema), por **correo electrónico**, o por ambos canales simultáneamente. También puedes desactivar las alertas por completo desde la misma sección si lo necesitas temporalmente.
   </Accordion>
 
   <Accordion title="¿Las fechas de vencimiento se actualizan automáticamente cada año?">
@@ -149,6 +139,6 @@ This page collects the most common questions from vacation rental hosts using Fi
   <Accordion title="¿El sistema está disponible para su uso fuera de Costa Rica?">
     FiscalHost Inteligente CR fue diseñado específicamente para el marco fiscal costarricense: las tasas de IVA, los formularios de declaración (D-104, D-101, D-150, D-151), las fechas de vencimiento y los enlaces al portal ATV son propios de Costa Rica y no aplican a otros países. El año fiscal (octubre–septiembre) y los tipos de contribuyente (físico/jurídico bajo el sistema de Hacienda CR) también son particulares del sistema costarricense.
 
-    El uso del sistema fuera de Costa Rica **no está oficialmente soportado** y los cálculos producidos no serán válidos para cumplir obligaciones fiscales en otras jurisdicciones. Si tienes propiedades en Costa Rica pero resides en el extranjero como no residente fiscal, el sistema sí es aplicable — en ese caso, revisa la configuración de `tasa_retencion` (15 % para no residentes) con tu asesor contable.
+    El uso del sistema fuera de Costa Rica **no está oficialmente soportado** y los cálculos producidos no serán válidos para cumplir obligaciones fiscales en otras jurisdicciones. Si tienes propiedades en Costa Rica pero resides en el extranjero como no residente fiscal, el sistema sí es aplicable — en ese caso, revisa la configuración de **Tasa de retención** (15 % para no residentes) con tu asesor contable.
   </Accordion>
 </AccordionGroup>

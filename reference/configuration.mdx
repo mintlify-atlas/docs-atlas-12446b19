@@ -1,153 +1,105 @@
 ---
 title: "Configuration Reference for FiscalHost Inteligente CR"
 sidebarTitle: "Configuración"
-description: "Complete reference for all configurable settings in FiscalHost Inteligente CR, including fiscal profile, tax rates, notification preferences, and system options."
+description: "Complete reference for configurable settings in FiscalHost Inteligente CR: fiscal profile, tax rates, notification preferences, and report options."
 ---
 
-FiscalHost Inteligente CR exposes a structured configuration object that controls every aspect of fiscal processing — from your legal taxpayer identity to the way reports are exported. Understanding each field and its default value is essential before you begin recording transactions. This reference documents every configurable parameter, grouped by functional category, so you can tailor the system to your specific situation as a vacation rental host in Costa Rica.
-
-## Ejemplo de configuración completa
-
-The following JSON block shows a fully populated configuration object. Each field is documented in the sections below.
-
-```json
-{
-  "perfil_fiscal": {
-    "nombre": "María Fernanda Solano Ulate",
-    "cedula": "1-1234-5678",
-    "tipo_contribuyente": "fisica",
-    "actividad_economica": "5510",
-    "regimen": "tradicional"
-  },
-  "configuracion_iva": {
-    "tasa_iva": 0.13,
-    "periodo_declaracion": "mensual",
-    "dia_vencimiento": 15
-  },
-  "configuracion_renta": {
-    "tasa_retencion": 0.15,
-    "fecha_inicio_periodo": "10-01",
-    "fecha_fin_periodo": "09-30"
-  },
-  "propiedades": [
-    {
-      "id": "prop-001",
-      "nombre": "Cabaña Vista al Mar",
-      "direccion": "Playa Hermosa, Guanacaste, Costa Rica",
-      "numero_catastral": "G-12345-001",
-      "plataformas": ["airbnb", "booking", "directo"]
-    }
-  ],
-  "alertas": {
-    "dias_anticipacion": [15, 7, 3, 1],
-    "canales": ["in-app", "email"],
-    "activo": true
-  },
-  "reportes": {
-    "formato_exportacion": "pdf",
-    "incluir_deducciones": true,
-    "moneda_base": "CRC"
-  }
-}
-```
-
----
+FiscalHost Inteligente CR lets you tailor every aspect of fiscal processing to your specific situation as a vacation rental host in Costa Rica. From your legal taxpayer identity to how reports are exported, the system settings are organized into six functional groups. This reference documents every available setting, its type, default value, and purpose — so you know exactly what each option controls before you start recording transactions.
 
 ## Perfil Fiscal
 
-The `perfil_fiscal` block identifies you as a taxpayer before the Ministerio de Hacienda. This information is embedded in all generated reports and is used to determine which filing obligations apply to your account.
+The fiscal profile identifies you as a taxpayer before the Ministerio de Hacienda. This information is embedded in all generated reports and determines which filing obligations apply to your account.
 
-| Campo | Tipo | Valor por defecto | Descripción |
+| Configuración | Tipo | Valor por defecto | Descripción |
 |---|---|---|---|
-| `nombre` | `string` | — | Nombre completo o razón social del contribuyente, tal como aparece en el RUT de Hacienda. |
-| `cedula` | `string` | — | Número de cédula física, cédula jurídica, o DIMEX del contribuyente. Se almacena como cadena para preservar el formato con guiones. |
-| `tipo_contribuyente` | `"fisica"` \| `"juridica"` | `"fisica"` | Indica si el contribuyente es una persona física o una persona jurídica (sociedad). Afecta las tablas de renta aplicables. |
-| `actividad_economica` | `string` | — | Código CNAE de la actividad económica principal, por ejemplo `"5510"` para *Actividades de alojamiento en hoteles y establecimientos similares*. |
-| `regimen` | `"tradicional"` \| `"simplificado"` | `"tradicional"` | Régimen tributario en el que está inscrito el contribuyente ante Hacienda. El Régimen Simplificado tiene obligaciones de IVA distintas. |
+| **Nombre** | Texto | — | Nombre completo o razón social del contribuyente, tal como aparece en el RUT de Hacienda. |
+| **Cédula** | Texto | — | Número de cédula física, cédula jurídica, o DIMEX del contribuyente. Se almacena preservando el formato con guiones. |
+| **Tipo de contribuyente** | `Persona física` \| `Persona jurídica` | `Persona física` | Indica si el contribuyente es una persona física o una persona jurídica (sociedad). Afecta las tablas de renta aplicables. |
+| **Actividad económica** | Texto | — | Código CNAE de la actividad económica principal, por ejemplo `5510` para *Actividades de alojamiento en hoteles y establecimientos similares*. |
+| **Régimen tributario** | `Tradicional` \| `Simplificado` | `Tradicional` | Régimen tributario en el que está inscrito el contribuyente ante Hacienda. El Régimen Simplificado tiene obligaciones de IVA distintas. |
 
 <Note>
-Cambiar `tipo_contribuyente` o `regimen` después de haber registrado transacciones **requiere reprocesar todos los cálculos existentes**. El sistema lo notificará y solicitará confirmación antes de aplicar el cambio retroactivo.
+Cambiar **Tipo de contribuyente** o **Régimen tributario** después de haber registrado transacciones **requiere reprocesar todos los cálculos existentes**. El sistema lo notificará y solicitará confirmación antes de aplicar el cambio retroactivo.
 </Note>
 
 ---
 
 ## Configuración de IVA
 
-The `configuracion_iva` block governs how Value Added Tax (Impuesto al Valor Agregado) is calculated on rental income and when filing reminders are triggered.
+These settings govern how Value Added Tax (Impuesto al Valor Agregado) is calculated on rental income and when filing reminders are triggered.
 
-| Campo | Tipo | Valor por defecto | Descripción |
+| Configuración | Tipo | Valor por defecto | Descripción |
 |---|---|---|---|
-| `tasa_iva` | `number` | `0.13` | Tasa del IVA expresada como decimal. El valor legal vigente en Costa Rica es `0.13` (13 %). |
-| `periodo_declaracion` | `"mensual"` | `"mensual"` | Frecuencia de declaración del IVA. Los servicios de hospedaje se declaran mensualmente mediante el formulario D-104. |
-| `dia_vencimiento` | `number` | `15` | Día calendario del mes siguiente en que vence la declaración y pago del IVA, según lo establece la Ley 9635. |
+| **Tasa de IVA** | Número | `13 %` | Tasa del IVA vigente en Costa Rica según la Ley 9635. Modifíquela únicamente si el Ministerio de Hacienda emite una reforma legal. |
+| **Período de declaración** | `Mensual` | `Mensual` | Frecuencia de declaración del IVA. Los servicios de hospedaje se declaran mensualmente mediante el formulario D-104. |
+| **Día de vencimiento** | Número | `15` | Día calendario del mes siguiente en que vence la declaración y pago del IVA, según lo establece la Ley 9635. |
 
 <Warning>
-**No modifique `tasa_iva` salvo que el Ministerio de Hacienda emita una reforma legal que cambie la tasa vigente.** Alterar este valor hará que todos los cálculos futuros — y los reprocesados — usen la tasa incorrecta, lo que puede derivar en subdeclaraciones o sobredeclaraciones ante Hacienda, con las sanciones y multas correspondientes. Consulte siempre el portal ATV en [atv.hacienda.go.cr](https://atv.hacienda.go.cr) para verificar la tasa oficial antes de realizar cualquier cambio.
+**No modifique la tasa de IVA salvo que el Ministerio de Hacienda emita una reforma legal que cambie la tasa vigente.** Alterar este valor producirá cálculos incorrectos en todos los períodos futuros, lo que puede derivar en subdeclaraciones o sobredeclaraciones ante Hacienda, con las sanciones y multas correspondientes. Verifique siempre la tasa oficial en el portal ATV: [atv.hacienda.go.cr](https://atv.hacienda.go.cr).
 </Warning>
 
 ---
 
 ## Configuración de Renta
 
-The `configuracion_renta` block defines parameters for income tax tracking, including the withholding rate and the boundaries of Costa Rica's non-calendar fiscal year.
+These settings define parameters for income tax tracking, including the withholding rate and the boundaries of Costa Rica's non-calendar fiscal year.
 
-| Campo | Tipo | Valor por defecto | Descripción |
+| Configuración | Tipo | Valor por defecto | Descripción |
 |---|---|---|---|
-| `tasa_retencion` | `number` | `0.15` | Tasa de retención en la fuente aplicada sobre ingresos brutos de alquiler para contribuyentes bajo Régimen Simplificado o no residentes. Se expresa como decimal (`0.15` = 15 %). |
-| `fecha_inicio_periodo` | `string` | `"10-01"` | Fecha de inicio del período fiscal en formato `MM-DD`. El año fiscal costarricense comienza el 1 de octubre. |
-| `fecha_fin_periodo` | `string` | `"09-30"` | Fecha de cierre del período fiscal en formato `MM-DD`. El año fiscal costarricense cierra el 30 de septiembre. |
+| **Tasa de retención** | Número | `15 %` | Tasa de retención definitiva sobre ingresos brutos de alquiler para contribuyentes bajo Régimen Simplificado o no residentes. |
+| **Inicio del período fiscal** | Fecha | `1 de octubre` | Fecha de inicio del año fiscal costarricense. El sistema acumula ingresos y gastos a partir de esta fecha. |
+| **Cierre del período fiscal** | Fecha | `30 de septiembre` | Fecha de cierre del año fiscal costarricense. El sistema genera el reporte anual de cierre en esta fecha. |
 
 <Note>
-Modificar `tasa_retencion` requiere reprocesar las transacciones del período fiscal en curso para recalcular las estimaciones de renta acumuladas. Los períodos fiscales ya cerrados y declarados no se ven afectados.
+Modificar la tasa de retención requiere reprocesar las transacciones del período fiscal en curso para recalcular las estimaciones de renta acumuladas. Los períodos fiscales ya cerrados y declarados no se ven afectados.
 </Note>
 
 ---
 
 ## Propiedades
 
-Each entry in the `propiedades` array represents a rental unit. FiscalHost Inteligente CR tracks income, expenses, and tax obligations separately per property, allowing you to generate reports at the unit level or consolidated across your portfolio.
+Each rental unit registered in FiscalHost Inteligente CR has its own settings entry. The system tracks income, expenses, and tax obligations separately per property, allowing reports at the unit level or consolidated across your portfolio.
 
-| Campo | Tipo | Valor por defecto | Descripción |
+| Configuración | Tipo | Valor por defecto | Descripción |
 |---|---|---|---|
-| `id` | `string` | — | Identificador único interno de la propiedad. Generado automáticamente si no se especifica (formato `prop-XXX`). |
-| `nombre` | `string` | — | Nombre descriptivo de la propiedad tal como aparece en reportes y alertas. |
-| `direccion` | `string` | — | Dirección física completa de la propiedad, incluyendo cantón, provincia y país. |
-| `numero_catastral` | `string` | — | Número catastral asignado por el Registro Nacional de Costa Rica. Se utiliza en declaraciones de bienes inmuebles. |
-| `plataformas` | `array` | `[]` | Lista de plataformas de distribución donde se lista la propiedad. Valores válidos: `"airbnb"`, `"booking"`, `"vrbo"`, `"directo"`. |
+| **Nombre de la propiedad** | Texto | — | Nombre descriptivo tal como aparece en reportes y alertas. |
+| **Dirección** | Texto | — | Dirección física completa de la propiedad, incluyendo cantón, provincia y país. |
+| **Número catastral** | Texto | — | Número catastral asignado por el Registro Nacional de Costa Rica. Se utiliza en declaraciones de bienes inmuebles. |
+| **Plataformas** | Lista | `[]` | Plataformas de distribución donde se lista la propiedad. Opciones disponibles: `Airbnb`, `Booking.com`, `VRBO`, `Directo`. |
 
 ---
 
 ## Alertas
 
-The `alertas` block controls how and when the system notifies you of upcoming tax deadlines, so you never miss a D-104, D-101, or D-150 filing.
+The alerts settings control how and when the system notifies you of upcoming tax deadlines, so you never miss a D-104, D-101, or D-150 filing.
 
-| Campo | Tipo | Valor por defecto | Descripción |
+| Configuración | Tipo | Valor por defecto | Descripción |
 |---|---|---|---|
-| `dias_anticipacion` | `number[]` | `[15, 7, 3, 1]` | Arreglo de días de antelación con los que se enviarán alertas antes de cada vencimiento. Por ejemplo, `[15, 7, 3, 1]` genera cuatro alertas por cada fecha límite. |
-| `canales` | `"in-app"` \| `"email"` | `["in-app", "email"]` | Canal o canales por los que se enviarán las notificaciones. Se puede especificar uno o ambos. |
-| `activo` | `boolean` | `true` | Activa o desactiva el sistema de alertas de forma global. Si se establece en `false`, no se enviará ninguna notificación. |
+| **Días de anticipación** | Lista de números | `15, 7, 3, 1` | Días de antelación con los que se enviarán alertas antes de cada vencimiento. Configura uno o varios valores según tu preferencia. |
+| **Canales de notificación** | `In-app` \| `Correo electrónico` | Ambos | Canal o canales por los que se enviarán las notificaciones. Puedes activar uno o ambos simultáneamente. |
+| **Alertas activas** | Activado / Desactivado | Activado | Activa o desactiva el sistema de alertas de forma global. Si se desactiva, no se enviará ninguna notificación. |
 
 ---
 
 ## Reportes
 
-The `reportes` block defines defaults for how financial and tax reports are generated and exported.
+The reports settings define defaults for how financial and tax reports are generated and exported.
 
-| Campo | Tipo | Valor por defecto | Descripción |
+| Configuración | Tipo | Valor por defecto | Descripción |
 |---|---|---|---|
-| `formato_exportacion` | `"pdf"` \| `"csv"` | `"pdf"` | Formato de salida para la exportación de reportes. `"pdf"` genera documentos listos para archivar; `"csv"` facilita la integración con hojas de cálculo. |
-| `incluir_deducciones` | `boolean` | `true` | Cuando es `true`, los reportes de renta incluyen el detalle de gastos deducibles (mantenimiento, depreciación, seguros, comisiones de plataformas). |
-| `moneda_base` | `"CRC"` \| `"USD"` | `"CRC"` | Moneda en la que se expresan los totales en los reportes. Las transacciones en moneda extranjera se convierten al tipo de cambio del BCCR correspondiente a la fecha de la transacción. |
+| **Formato de exportación** | `PDF` \| `CSV` | `PDF` | Formato de salida para la exportación de reportes. PDF genera documentos listos para archivar; CSV facilita la integración con hojas de cálculo. |
+| **Incluir deducciones** | Activado / Desactivado | Activado | Cuando está activado, los reportes de renta incluyen el detalle de gastos deducibles (mantenimiento, depreciación, seguros, comisiones de plataformas). |
+| **Moneda base** | `CRC` \| `USD` | `CRC` | Moneda en la que se expresan los totales en los reportes. Las transacciones en moneda extranjera se convierten al tipo de cambio del BCCR correspondiente a la fecha de la transacción. |
 
 ---
 
 ## Referencia rápida
 
 <CardGroup cols={2}>
-  <Card title="Guía de configuración inicial" icon="gear" href="/guides/setup">
+  <Card title="Guía de configuración inicial" icon="gear" href="guides/setup">
     Sigue el proceso paso a paso para configurar FiscalHost por primera vez, incluyendo tu perfil fiscal y tus primeras propiedades.
   </Card>
-  <Card title="Reglas fiscales de Costa Rica" icon="scale-balanced" href="/reference/tax-rules-cr">
+  <Card title="Reglas fiscales de Costa Rica" icon="scale-balanced" href="reference/tax-rules-cr">
     Consulta las tasas, formularios, vencimientos y obligaciones fiscales aplicables a anfitriones de alquiler vacacional en Costa Rica.
   </Card>
 </CardGroup>
