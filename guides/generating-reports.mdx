@@ -1,0 +1,163 @@
+---
+title: "Generate Tax Reports with FiscalHost Inteligente CR"
+sidebarTitle: "Generar Reportes"
+description: "Step-by-step guide to generating IVA, income tax, and income summary reports in FiscalHost Inteligente CR for Hacienda submissions."
+---
+
+Before every tax filing deadline, you need accurate, up-to-date reports that reflect your rental income, deductions, and computed tax obligations. FiscalHost Inteligente CR compiles the transaction data you have registered, applies the appropriate tax rules, and produces ready-to-use reports in PDF and CSV formats. These reports serve both as the source of truth for filling in your ATV declarations and as archival records for potential Hacienda audits.
+
+## When to Generate Reports
+
+| Tax Obligation | Report Needed | Typical Filing Deadline |
+|---|---|---|
+| Monthly IVA (D-104) | Reporte Mensual IVA | Last business day of the following month |
+| Annual income tax (D-101) | Reporte Anual de Renta | December 15 |
+| Withholding summary (D-151) | Detalle de Ingresos | February 28 (if applicable) |
+| Internal review / audit | Resumen de Deducciones + Detalle de Ingresos | As needed |
+
+Generate each report **at least two business days before** the filing deadline so you have time to verify figures and correct any discrepancies before submitting to ATV.
+
+## Types of Reports
+
+### Reporte Mensual IVA
+
+Used to populate the **D-104** (Declaración Jurada del Impuesto al Valor Agregado). This report summarizes, for a single calendar month:
+
+- Total gross rental income subject to IVA
+- IVA repercutido (13% applied to gross income)
+- IVA soportado (credits from qualifying purchases)
+- Net IVA payable, broken down by property
+- A transaction-level detail log with dates, reservation IDs, and amounts
+
+### Reporte Anual de Renta
+
+Used to populate the **D-101** (Declaración Jurada del Impuesto sobre las Utilidades). Covers the full fiscal year (October 1 – September 30) and includes:
+
+- Total gross rental income per property
+- Categorized deductible expenses with document references
+- Net taxable income (renta neta imponible)
+- Computed income tax at the applicable rate
+- Pagos a cuenta credited against the liability
+- Final balance payable or in favor
+
+### Detalle de Ingresos
+
+A period-by-period income breakdown useful for month-by-month reconciliation, D-151 preparation, or sharing with your accountant. Each row in the report corresponds to one reservation and shows:
+
+- Check-in and check-out dates
+- Property name and cadastral number
+- Platform, guest name (if available), and reservation ID
+- Gross amount in original currency
+- Exchange rate applied (if USD)
+- CRC equivalent
+- IVA amount included
+
+### Resumen de Deducciones
+
+A summary of all recorded deductible expenses for the selected period. Columns include:
+
+- Date of expense
+- Supplier name and cédula
+- Electronic invoice number (consecutivo de factura electrónica)
+- Expense category (maintenance, commissions, depreciation, etc.)
+- Amount in CRC
+- IVA paid (soportado) eligible for credit
+
+## Generating a Report
+
+<Steps>
+  ### Select the report type and period
+
+  Navigate to **Reportes → Generar Reporte**. In the dropdown **Tipo de Reporte**, choose one of:
+
+  - Reporte Mensual IVA
+  - Reporte Anual de Renta
+  - Detalle de Ingresos
+  - Resumen de Deducciones
+
+  Then set the **período**: select a single month for IVA reports, or a full fiscal year for Renta reports. For the Detalle de Ingresos, you can specify any custom date range.
+
+  ### Review the computed values
+
+  Click **Vista Previa**. FiscalHost Inteligente CR displays the full report in-screen before export. Check the following carefully:
+
+  - **Ingresos totales** match your bank statements and platform payout histories.
+  - **IVA repercutido** equals gross income × 0.13 for each month.
+  - **Deducciones** are only listed for expenses with uploaded electronic invoices.
+  - **Pagos a cuenta** appear with their payment dates and receipt numbers.
+
+  If you find a discrepancy, click **Editar Transacciones** or **Editar Gastos** to correct the underlying data, then return to **Reportes → Generar Reporte** and re-run the preview.
+
+  <Tip>
+    Before clicking **Exportar**, cross-reference the **Ingresos totales** figure with your bank account deposits and platform payout summaries for the same period. Airbnb and Booking.com both provide monthly earning statements in their host portals — use those as your independent verification. A difference of more than 1% warrants investigation before filing.
+  </Tip>
+
+  ### Export PDF or CSV
+
+  Once you are satisfied with the figures, click **Exportar** and choose your format:
+
+  - **PDF** — formatted report suitable for filing reference, accountant sharing, and audit archive.
+  - **CSV** — raw data suitable for importing into accounting software, performing further analysis, or uploading to your accountant's system.
+
+  The exported file is automatically named with the report type and period (e.g., `reporte-iva-2026-06.pdf`, `renta-anual-2025-2026.csv`) and saved to **Reportes → Historial de Reportes**.
+
+  ### Use the report on the ATV portal
+
+  Log in to [ATV – Administración Tributaria Virtual](https://www.hacienda.go.cr/ATV/) and navigate to the corresponding declaration form:
+
+  - **D-104** for monthly IVA — enter the figures from your Reporte Mensual IVA (IVA repercutido, IVA soportado, net payable).
+  - **D-101** for annual income tax — enter gross income, total deductions, net taxable income, pagos a cuenta, and final tax due from your Reporte Anual de Renta.
+
+  ATV does not accept file uploads for these declarations; you must manually transcribe the values from your FiscalHost report into the ATV form fields. The labeled sections on the FiscalHost PDF correspond directly to the field numbers on the D-104 and D-101 forms.
+
+  ### Archive the report
+
+  After filing, return to **Reportes → Historial de Reportes** and mark the report as **Declarado** by clicking the checkmark icon next to the entry. Enter the **número de confirmación** provided by ATV upon successful submission. This links your FiscalHost record to the official filing and makes it easy to locate during an audit.
+</Steps>
+
+## What Each Report Contains
+
+### D-104 Reference Map
+
+| Report Section | D-104 Field | Description |
+|---|---|---|
+| IVA Repercutido | Casilla 23 | Total IVA collected on rental income |
+| IVA Soportado | Casilla 28 | Total IVA credits on qualifying purchases |
+| IVA Neto a Pagar | Casilla 45 | Net amount remitted to Hacienda |
+| Ajustes y notas de crédito | Casilla 31 | Adjustments for refunded bookings |
+
+### D-101 Reference Map
+
+| Report Section | D-101 Field | Description |
+|---|---|---|
+| Ingresos brutos | Línea 1 | Total gross rental income for the fiscal year |
+| Costos y gastos deducibles | Línea 16 | Total allowable deductions |
+| Renta neta imponible | Línea 20 | Net taxable income |
+| Impuesto determinado | Línea 28 | Tax computed at applicable rate |
+| Pagos a cuenta acreditados | Línea 35 | Quarterly advance payments |
+| Impuesto a pagar / a favor | Línea 40 | Final balance |
+
+## Storing and Archiving Reports
+
+<Note>
+  Costa Rican tax law (Código de Normas y Procedimientos Tributarios, Article 109) requires taxpayers to retain accounting records and supporting documentation for a minimum of **5 years** from the date of each declaration. Store your exported PDFs and CSVs in a secure location — both locally and in a cloud backup. FiscalHost Inteligente CR's **Historial de Reportes** serves as an in-app archive, but you should also maintain an independent backup in case of system access issues.
+</Note>
+
+All generated reports are stored in **Reportes → Historial de Reportes** with the following metadata:
+
+- Report type and period covered
+- Generation date and time
+- User who generated the report
+- Declaration confirmation number (if marked as filed)
+- File download links (PDF and CSV)
+
+Reports can be filtered by year, type, or property and downloaded at any time for sharing with an accountant, a bank, or a Hacienda auditor.
+
+<CardGroup cols={2}>
+  <Card title="Módulo de Reportes" icon="chart-bar" href="/modules/reports">
+    Full reference documentation for the Reports module, including custom report builder options and bulk export.
+  </Card>
+  <Card title="Gestión de Alertas" icon="bell" href="/guides/managing-alerts">
+    Configure deadline alerts so you are notified in advance of every D-104 and D-101 filing date.
+  </Card>
+</CardGroup>

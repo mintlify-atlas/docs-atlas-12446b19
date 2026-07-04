@@ -1,0 +1,193 @@
+---
+title: "Git Workflow and Contribution Guide for FiscalHost Inteligente CR"
+sidebarTitle: "Git Workflow"
+description: "Learn the Git Flow branching strategy, pull request process, issue labeling, and CI/CD pipeline used to develop FiscalHost Inteligente CR."
+---
+
+FiscalHost Inteligente CR is developed under a structured, lightweight adaptation of **Git Flow** — calibrated to a small academic team and a ten-month delivery timeline running from February to December 2026 at Universidad Fidélitas. Every change, whether a new feature, a bug fix, or a critical hotfix, follows the process described on this page. Adhering to these conventions keeps the codebase stable, makes reviews predictable, and ensures the CI/CD pipeline can validate every change before it reaches production.
+
+---
+
+## Estructura de ramas
+
+The repository maintains two permanent branches and two families of short-lived branches:
+
+| Rama | Propósito | Protección | Ciclo de vida |
+|---|---|---|---|
+| `main` | Código estable desplegado en producción. Solo contiene versiones revisadas, aprobadas y validadas por CI/CD. | PR obligatorio con al menos 1 aprobación; checks de CI/CD requeridos; push directo bloqueado. | Permanente |
+| `develop` | Rama de integración donde confluyen todas las funcionalidades completadas antes de su liberación a producción. | PR obligatorio con al menos 1 aprobación; push directo bloqueado. | Permanente |
+| `feature/*` | Desarrollo de una funcionalidad específica. Se crea desde `develop` y se integra de regreso a `develop` mediante PR. | Sin protección especial — trabajo en la copia local del desarrollador. | Temporal — se elimina tras el merge. |
+| `hotfix/*` | Corrección de un error crítico detectado en producción. Se crea desde `main` y se integra tanto en `main` como en `develop`. | PR requerido hacia `main` y sincronización posterior con `develop`. | Temporal — se elimina tras el doble merge. |
+
+<Note>
+**Convenciones de nomenclatura de ramas:**
+
+Use slugs en minúsculas con guiones para separar palabras. El prefijo indica la naturaleza del cambio:
+
+- `feature/importacion-csv` — nueva funcionalidad de importación de CSV
+- `feature/modulo-alertas-vencimiento` — módulo de alertas de vencimientos
+- `feature/exportacion-reporte-pdf` — generación y exportación de reportes en PDF
+- `hotfix/error-calculo-renta` — corrección de error en el cálculo de renta
+- `hotfix/iva-tipo-cambio-nulo` — parche para tipo de cambio nulo en IVA
+
+Nunca use espacios, tildes ni caracteres especiales en los nombres de ramas.
+</Note>
+
+---
+
+## Flujo de desarrollo de funcionalidades
+
+Follow these steps for every new feature or improvement, no matter how small:
+
+<Steps>
+  <Step title="Crear un Issue en GitHub">
+    Documenta el requerimiento funcional abriendo un **GitHub Issue** en el repositorio privado `FiscalHost-Inteligente-CR`. Describe el comportamiento esperado, los criterios de aceptación y el módulo afectado. Asigna las etiquetas correspondientes (ver sección de etiquetas más abajo) y añade el Issue al tablero Kanban en la columna **To Do**.
+  </Step>
+  <Step title="Crear la rama feature/* desde develop">
+    Desde tu copia local actualizada de `develop`, crea la rama de trabajo:
+
+    ```bash
+    git checkout develop
+    git pull origin develop
+    git checkout -b feature/nombre-de-la-funcionalidad
+    ```
+
+    Vincula la rama al Issue correspondiente en GitHub para mantener la trazabilidad.
+  </Step>
+  <Step title="Desarrollar y hacer commits">
+    Implementa los cambios en la rama `feature/*`. Sigue las convenciones de commits del proyecto: mensajes en español e inglés, imperativo, referenciando el número del Issue cuando corresponda:
+
+    ```bash
+    git add .
+    git commit -m "feat(M2): agregar cálculo de retención definitiva para no residentes (#45)"
+    git push origin feature/nombre-de-la-funcionalidad
+    ```
+
+    Mantén los commits atómicos y descriptivos. Mueve el Issue a **In Progress** en el tablero Kanban al comenzar.
+  </Step>
+  <Step title="Abrir un Pull Request hacia develop">
+    Cuando la funcionalidad esté completa y las pruebas locales pasen, abre un **Pull Request** desde `feature/*` hacia `develop` en GitHub. El PR debe:
+
+    - Referenciar el Issue con `Closes #N` en la descripción.
+    - Incluir un resumen de los cambios realizados y capturas de pantalla o logs si aplica.
+    - Asignar al menos un revisor del equipo.
+    - Pasar todos los checks del pipeline de GitHub Actions (compilación, pruebas, linting).
+
+    Mueve el Issue a **Review** en el tablero Kanban.
+  </Step>
+  <Step title="Revisión, aprobación y merge a develop">
+    Un miembro del equipo revisa el PR, deja comentarios si es necesario y lo aprueba una vez que los cambios son satisfactorios. Tras la aprobación y con todos los checks en verde, se realiza el merge a `develop`. La rama `feature/*` puede eliminarse. Mueve el Issue a **Done**.
+  </Step>
+  <Step title="Liberar a producción — PR de develop a main">
+    Cuando un conjunto de funcionalidades integradas en `develop` ha sido probado y validado para su liberación, se abre un **Pull Request de `develop` hacia `main`**. Este PR consolida el trabajo del sprint o iteración y requiere la misma aprobación y checks de CI/CD. Tras el merge, el código queda disponible en el entorno de producción.
+  </Step>
+</Steps>
+
+---
+
+## Proceso de hotfix
+
+A critical production bug that cannot wait for the normal feature cycle is handled through a `hotfix/*` branch:
+
+1. **Crear la rama desde `main`** — nunca desde `develop`, para no arrastrar cambios no publicados:
+
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b hotfix/descripcion-del-error
+   ```
+
+2. **Aplicar la corrección** con el menor alcance posible. Documentar el error en un Issue con la etiqueta `bug` y el módulo correspondiente.
+
+3. **Abrir PR hacia `main`** — con revisión y aprobación requeridas. El pipeline de CI/CD debe pasar.
+
+4. **Sincronizar con `develop`** — inmediatamente después del merge a `main`, hacer merge de la misma rama `hotfix/*` (o del commit resultante) hacia `develop` para que la corrección no se pierda en la próxima liberación:
+
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git merge hotfix/descripcion-del-error
+   git push origin develop
+   ```
+
+5. **Eliminar la rama** `hotfix/*` una vez completados ambos merges.
+
+---
+
+## Etiquetas de Issues
+
+GitHub Issues use a two-axis labeling system to categorize work by **module** and by **type**:
+
+### Por módulo
+
+| Etiqueta | Módulo |
+|---|---|
+| `M1` | Gestión de perfil fiscal y configuración general |
+| `M2` | Cálculo y declaración de IVA |
+| `M3` | Cálculo y declaración de Impuesto sobre la Renta |
+| `M4` | Importación de datos y procesamiento de transacciones |
+| `M5` | Alertas, notificaciones y generación de reportes |
+
+### Por tipo
+
+| Etiqueta | Uso |
+|---|---|
+| `feature` | Nueva funcionalidad o mejora planificada |
+| `bug` | Error o comportamiento incorrecto en el sistema |
+| `documentation` | Creación o actualización de documentación técnica o de usuario |
+| `testing` | Pruebas unitarias, de integración o de aceptación |
+
+Combina siempre una etiqueta de módulo con una etiqueta de tipo al crear un Issue. Ejemplo: `M2` + `bug` para un error en el cálculo del IVA.
+
+---
+
+## Tablero Kanban — GitHub Projects
+
+All active work is tracked on the team's GitHub Projects Kanban board. Each Issue moves through the following columns as it progresses:
+
+| Columna | Descripción |
+|---|---|
+| **To Do** | Requerimiento documentado y priorizado, listo para ser tomado por un desarrollador. |
+| **In Progress** | La rama `feature/*` o `hotfix/*` ha sido creada y el desarrollo está en curso. |
+| **Review** | El Pull Request ha sido abierto y está esperando revisión y aprobación. |
+| **Done** | El PR fue aprobado, el merge completado y el Issue cerrado. |
+
+---
+
+## Pipeline de CI/CD — GitHub Actions
+
+Every pull request targeting `develop` or `main` automatically triggers the CI/CD pipeline configured in GitHub Actions. The pipeline executes the following stages in sequence:
+
+| Etapa | Descripción |
+|---|---|
+| **Compilación** | Verifica que el proyecto compila sin errores. |
+| **Pruebas automatizadas** | Ejecuta la suite de pruebas unitarias e integración. Un fallo bloquea el merge. |
+| **Linting y formato** | Valida el estilo del código según las reglas del proyecto. |
+| **Despliegue** | En merges a `main`, despliega automáticamente la nueva versión al entorno de producción. |
+
+No es posible hacer merge de un PR si alguno de los checks del pipeline reporta error. Este comportamiento es parte de la configuración de protección de ramas en GitHub.
+
+---
+
+## Información del repositorio
+
+| Campo | Valor |
+|---|---|
+| **Visibilidad** | Privado |
+| **Rama por defecto** | `main` |
+| **Equipo** | José Andrés Acevedo, Hugo Alberto Villarreal, Enzo Josef Morales |
+| **Institución** | Universidad Fidélitas, Costa Rica |
+| **Período académico** | Febrero 2026 – Diciembre 2026 |
+
+---
+
+## Recursos relacionados
+
+<CardGroup cols={2}>
+  <Card title="Arquitectura del sistema" icon="diagram-project" href="/architecture">
+    Explora la arquitectura técnica de FiscalHost Inteligente CR, sus módulos, capas y decisiones de diseño.
+  </Card>
+  <Card title="Introducción al proyecto" icon="house" href="/introduction">
+    Conoce el contexto, los objetivos académicos y el alcance funcional de FiscalHost Inteligente CR.
+  </Card>
+</CardGroup>

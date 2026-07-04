@@ -1,0 +1,150 @@
+---
+title: "IVA Module: Automate Costa Rica's 13% VAT for Vacation Rentals"
+sidebarTitle: "IVA (M1)"
+description: "The IVA module calculates Costa Rica's 13% VAT on vacation rental income, generates D-104 declaration data, and tracks monthly tax obligations."
+---
+
+El módulo IVA (M1) de FiscalHost Inteligente CR automatiza el cálculo, seguimiento y preparación de la declaración del Impuesto al Valor Agregado para anfitriones de alquiler vacacional en Costa Rica. Cada mes, el sistema toma los ingresos registrados, aplica la tasa vigente del 13 %, identifica ingresos exentos, y genera los datos listos para completar el formulario D-104 ante el Ministerio de Hacienda.
+
+## ¿Qué es el IVA en Costa Rica?
+
+El **Impuesto al Valor Agregado (IVA)** es un tributo de consumo regulado por la Ley N.° 9635 (_Ley de Fortalecimiento de las Finanzas Públicas_), vigente desde julio de 2019. Reemplazó al antiguo Impuesto General sobre las Ventas (IGV) y amplió su base imponible para incluir los servicios, entre ellos el **arrendamiento de inmuebles para uso turístico o vacacional**.
+
+La tasa general es del **13 %** sobre el precio del servicio. Los anfitriones que superen el umbral de inscripción obligatoria (actualmente ₡3,700,000 en ingresos anuales) deben inscribirse como contribuyentes de IVA ante Hacienda y presentar la declaración mensualmente.
+
+## Fórmula de cálculo
+
+El cálculo base que aplica el módulo es:
+
+```
+IVA a pagar = Ingresos gravados × 0.13
+```
+
+Cuando una reserva mezcla servicios gravados (alojamiento) con servicios exentos o sujetos a tarifa reducida, el módulo los segrega antes de aplicar la tasa:
+
+```
+IVA a pagar = (Ingresos totales − Ingresos exentos) × 0.13
+```
+
+### Ejemplo numérico
+
+| Concepto | Monto (₡) |
+|---|---|
+| Ingresos brutos del mes | 850,000 |
+| Ingresos exentos (limpieza no gravada) | 50,000 |
+| **Base imponible** | **800,000** |
+| **IVA a pagar (13 %)** | **104,000** |
+
+## Tabla de ejemplos de cálculo
+
+| Ingresos gravados (₡) | Tasa | IVA resultante (₡) |
+|---|---|---|
+| 200,000 | 13 % | 26,000 |
+| 500,000 | 13 % | 65,000 |
+| 800,000 | 13 % | 104,000 |
+| 1,200,000 | 13 % | 156,000 |
+| 2,500,000 | 13 % | 325,000 |
+
+## Declaración D-104
+
+La **Declaración Jurada del Impuesto al Valor Agregado (D-104)** es el formulario oficial que los contribuyentes presentan mensualmente a través del portal **EDDI-7** o **VET** del Ministerio de Hacienda. El módulo M1 genera automáticamente los valores que corresponden a cada casilla del formulario.
+
+- **Periodicidad:** Mensual
+- **Vencimiento:** Día 15 del mes siguiente al período declarado
+- **Canal:** Portal VET de Hacienda (`tica.hacienda.go.cr`)
+- **Casillas principales generadas:**
+
+| Casilla D-104 | Descripción | Valor generado por M1 |
+|---|---|---|
+| 101 | Ventas y prestación de servicios gravados | Ingresos gravados del período |
+| 301 | IVA repercutido (débito fiscal) | `Ingresos gravados × 0.13` |
+| 401 | IVA soportado (crédito fiscal) | Suma de IVA en facturas de gastos |
+| 501 | Impuesto a pagar / saldo a favor | Casilla 301 − Casilla 401 |
+
+## Configuración del módulo
+
+El módulo M1 se configura a través del archivo `fiscal_config.json` en la raíz del proyecto. Las categorías de ingreso y su tratamiento fiscal se declaran en la sección `iva`:
+
+```json
+{
+  "iva": {
+    "tasa_general": 0.13,
+    "periodo": "mensual",
+    "categorias": [
+      {
+        "nombre": "Alojamiento vacacional",
+        "codigo": "ALQ",
+        "gravado": true,
+        "tasa": 0.13
+      },
+      {
+        "nombre": "Servicio de limpieza (incluido en tarifa)",
+        "codigo": "LIMP",
+        "gravado": false,
+        "tasa": 0.00
+      },
+      {
+        "nombre": "Desayuno o alimentación",
+        "codigo": "ALM",
+        "gravado": true,
+        "tasa": 0.13
+      }
+    ],
+    "umbral_inscripcion_anual_crc": 3700000,
+    "dia_vencimiento_declaracion": 15
+  }
+}
+```
+
+### Opciones de configuración
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `tasa_general` | `float` | Tasa de IVA aplicable (por defecto `0.13`) |
+| `periodo` | `string` | Periodicidad del cálculo (`mensual`) |
+| `categorias[].gravado` | `boolean` | `true` si la categoría tributa IVA |
+| `categorias[].tasa` | `float` | Tasa específica de la categoría |
+| `umbral_inscripcion_anual_crc` | `number` | Umbral de inscripción obligatoria en colones |
+| `dia_vencimiento_declaracion` | `number` | Día límite de presentación mensual |
+
+## Salida del módulo
+
+Tras procesar las transacciones de un período, M1 produce un objeto de resultado con la siguiente estructura:
+
+```json
+{
+  "periodo": "2026-05",
+  "ingresos_totales_crc": 850000,
+  "ingresos_exentos_crc": 50000,
+  "base_imponible_crc": 800000,
+  "iva_debito_fiscal_crc": 104000,
+  "iva_credito_fiscal_crc": 18000,
+  "iva_neto_a_pagar_crc": 86000,
+  "fecha_vencimiento": "2026-06-15",
+  "declaracion_d104": {
+    "casilla_101": 800000,
+    "casilla_301": 104000,
+    "casilla_401": 18000,
+    "casilla_501": 86000
+  }
+}
+```
+
+<Warning>
+Las declaraciones D-104 presentadas después del día 15 del mes siguiente generan **intereses y multas** calculados por el Ministerio de Hacienda. La multa por mora comienza en el 1 % mensual sobre el impuesto no pagado, más intereses legales. FiscalHost Inteligente CR incluye el módulo de Alertas (M3) para notificarte con anticipación, pero la responsabilidad de la presentación es del contribuyente.
+</Warning>
+
+<Tip>
+Conserva todas las **facturas electrónicas de gastos** (servicios públicos, suministros, reparaciones) relacionadas con la actividad de arrendamiento. El IVA incluido en esas facturas puede acreditarse contra el débito fiscal y reducir el monto neto a pagar en la casilla 501. El módulo M1 reconoce automáticamente estas facturas cuando se importan a través del módulo de Importación CSV (M5).
+</Tip>
+
+## Recursos relacionados
+
+<CardGroup cols={2}>
+  <Card title="Guía de cálculos tributarios" icon="calculator" href="/guides/tax-calculations">
+    Aprende cómo FiscalHost aplica las fórmulas de IVA y renta paso a paso.
+  </Card>
+  <Card title="Reglas fiscales de Costa Rica" icon="book" href="/reference/tax-rules-cr">
+    Referencia completa de la normativa tributaria costarricense aplicable a alquileres vacacionales.
+  </Card>
+</CardGroup>

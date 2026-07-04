@@ -1,0 +1,73 @@
+{
+  "projectType": "saas",
+  "projectName": "FiscalHost Inteligente CR",
+  "projectDescription": "A smart fiscal management assistant for vacation rental hosts in Costa Rica, automating VAT (IVA 13%) calculations, income tax tracking, compliance deadline alerts, and report generation.",
+  "theme": "almond",
+  "primaryColor": "#16A34A",
+  "lightColor": "#07C983",
+  "darkColor": "#15803D",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentación",
+        "groups": [
+          {
+            "group": "Introducción",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "architecture"
+            ]
+          },
+          {
+            "group": "Módulos del Sistema",
+            "pages": [
+              "modules/iva-vat",
+              "modules/income-tax",
+              "modules/deadline-alerts",
+              "modules/reports",
+              "modules/csv-import"
+            ]
+          },
+          {
+            "group": "Guías de Uso",
+            "pages": [
+              "guides/setup",
+              "guides/tax-calculations",
+              "guides/generating-reports",
+              "guides/managing-alerts"
+            ]
+          },
+          {
+            "group": "Referencia Técnica",
+            "pages": [
+              "reference/configuration",
+              "reference/tax-rules-cr",
+              "reference/git-workflow",
+              "reference/faq"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Automatic IVA (13%) calculation for vacation rental income",
+    "Income tax (Impuesto sobre la Renta) calculation and tracking",
+    "Compliance deadline alerts and reminders for Costa Rican tax obligations",
+    "Automated fiscal report generation for tax filings",
+    "CSV import for transaction and income data",
+    "Module-based architecture (M1–M5) for organized fiscal management",
+    "Git Flow-based development with CI/CD pipeline",
+    "Kanban project management via GitHub Projects"
+  ],
+  "publicApiSurface": [
+    "IVA calculation module (13% VAT on rental income)",
+    "Renta (income tax) computation module",
+    "Deadline alert system",
+    "Report generation engine",
+    "CSV data import (feature/importacion-csv)",
+    "GitHub Issues with module labels M1–M5",
+    "CI/CD pipeline via GitHub Actions"
+  ]
+}

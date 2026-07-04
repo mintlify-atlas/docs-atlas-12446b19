@@ -1,0 +1,134 @@
+---
+title: "Deadline Alerts Module: Never Miss a Costa Rica Tax Filing Date"
+sidebarTitle: "Alertas (M3)"
+description: "The Alerts module monitors Costa Rica's Ministerio de Hacienda tax deadlines and sends configurable notifications before each filing date."
+---
+
+El módulo de Alertas (M3) de FiscalHost Inteligente CR actúa como una agenda fiscal automatizada. Mantiene un calendario sincronizado con las obligaciones tributarias del Ministerio de Hacienda de Costa Rica y envía notificaciones anticipadas por los canales que el anfitrión configure, eliminando el riesgo de vencer una declaración y acumular intereses o multas.
+
+## ¿Qué hace el módulo?
+
+M3 carga el calendario fiscal de Costa Rica al iniciar el período contable y calcula cuántos días faltan para cada vencimiento. Cuando el contador llega al umbral de alerta configurado, el sistema despacha una notificación al usuario. Las alertas son persistentes: si la declaración no ha sido marcada como presentada, el sistema reenvía recordatorios adicionales a intervalos más cortos conforme se acerca la fecha límite.
+
+## Fechas clave monitoreadas
+
+La siguiente tabla lista todas las obligaciones fiscales que M3 rastrea de manera predeterminada:
+
+| Formulario | Nombre | Periodicidad | Fecha de vencimiento |
+|---|---|---|---|
+| **D-104** | Declaración de IVA | Mensual | Día 15 del mes siguiente |
+| **D-101** | Declaración de Renta (Utilidades) | Anual | 15 de diciembre |
+| **Pago a cuenta** | Adelanto trimestral de renta | Trimestral | Junio, septiembre, diciembre, marzo (día 15) |
+| **D-151** | Declaración Informativa de Clientes, Proveedores y Gastos Específicos | Anual | 28 de febrero del año siguiente |
+| **D-125** | Retención en la fuente sobre rentas de capital | Mensual | Día 15 del mes siguiente |
+| **Factura electrónica** | Obligación de emisión de comprobantes | Continua | Al momento de cada transacción |
+
+## Configuración de alertas
+
+Las alertas se configuran en la sección `alertas` del archivo `fiscal_config.json`. Puedes definir cuántos días antes de cada vencimiento deseas recibir notificaciones y por qué canales:
+
+```json
+{
+  "alertas": {
+    "activas": true,
+    "canales": ["email", "push", "sms"],
+    "destinatarios": [
+      "anfitrion@ejemplo.com",
+      "+50688887777"
+    ],
+    "reglas": [
+      {
+        "formulario": "D-104",
+        "dias_anticipacion": [10, 5, 2, 1],
+        "canales_override": null
+      },
+      {
+        "formulario": "D-101",
+        "dias_anticipacion": [30, 15, 7, 2],
+        "canales_override": ["email", "sms"]
+      },
+      {
+        "formulario": "pago_a_cuenta",
+        "dias_anticipacion": [15, 7, 3],
+        "canales_override": null
+      },
+      {
+        "formulario": "D-151",
+        "dias_anticipacion": [30, 10, 3],
+        "canales_override": null
+      }
+    ],
+    "zona_horaria": "America/Costa_Rica"
+  }
+}
+```
+
+### Parámetros de configuración
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `activas` | `boolean` | Habilita o deshabilita todas las alertas del sistema |
+| `canales` | `array` | Canales globales: `email`, `push`, `sms` |
+| `destinatarios` | `array` | Lista de correos y/o números de teléfono |
+| `reglas[].formulario` | `string` | Identificador del formulario o tipo de obligación |
+| `reglas[].dias_anticipacion` | `array` | Días antes del vencimiento en que se dispara cada alerta |
+| `reglas[].canales_override` | `array \| null` | Canales específicos para esta regla; `null` usa los globales |
+| `zona_horaria` | `string` | Zona horaria para el cálculo de vencimientos (IANA) |
+
+## Flujo de una alerta
+
+<Steps>
+  <Step title="Carga del calendario fiscal">
+    Al iniciar cada período mensual, M3 genera la lista de vencimientos aplicables según los módulos activos. Si M1 está habilitado, carga los vencimientos D-104 del mes. Si M2 está habilitado, carga pagos a cuenta y el D-101 anual.
+  </Step>
+  <Step title="Evaluación diaria de proximidad">
+    Cada día a las **6:00 a.m. (hora de Costa Rica)**, el sistema calcula la diferencia en días entre la fecha actual y cada vencimiento pendiente. Compara ese valor contra los umbrales `dias_anticipacion` definidos en la configuración.
+  </Step>
+  <Step title="Generación del mensaje de alerta">
+    Cuando se alcanza un umbral, el sistema compone el mensaje de notificación con el nombre del formulario, la fecha de vencimiento exacta, el monto estimado a pagar (si ya fue calculado por M1 o M2), y un enlace directo al portal VET de Hacienda.
+  </Step>
+  <Step title="Despacho por los canales configurados">
+    El mensaje se envía simultáneamente a todos los canales activos: correo electrónico (plantilla HTML), notificación push (para la app móvil o extensión de navegador) y/o SMS. Cada despacho queda registrado en el log de auditoría de alertas.
+  </Step>
+  <Step title="Confirmación de presentación">
+    Una vez que el anfitrión marca la declaración como presentada en FiscalHost (o el sistema detecta la importación del comprobante), M3 cancela las alertas pendientes para ese período y registra la fecha de cierre.
+  </Step>
+</Steps>
+
+## Ejemplo de mensaje de alerta (email)
+
+```
+Asunto: ⚠️ FiscalHost — Vence en 5 días: Declaración D-104 (Mayo 2026)
+
+Estimado anfitrión,
+
+Su declaración mensual de IVA (D-104) correspondiente al período
+mayo 2026 vence el 15 de junio de 2026.
+
+  • Monto estimado a pagar: ₡86,000
+  • Portal de presentación: https://tica.hacienda.go.cr
+
+Ingrese a FiscalHost para revisar el detalle y exportar los datos
+del formulario D-104 antes de la fecha límite.
+
+Equipo FiscalHost Inteligente CR
+```
+
+<Tip>
+Activa el canal de **notificaciones push** en la configuración de tu cuenta para recibir alertas directamente en tu dispositivo móvil, incluso cuando no tengas abierta la aplicación. Para el D-101 anual, se recomienda configurar al menos el recordatorio de **30 días** para tener tiempo suficiente de reunir los comprobantes de gastos deducibles del año fiscal.
+</Tip>
+
+<Warning>
+El Ministerio de Hacienda puede modificar las fechas de vencimiento mediante resoluciones de prórroga publicadas en La Gaceta. FiscalHost Inteligente CR actualiza el calendario fiscal cuando se detectan cambios oficiales, pero **siempre verifica la fecha vigente directamente en `tica.hacienda.go.cr`** antes de asumir que la alerta refleja el plazo final definitivo.
+</Warning>
+
+## Recursos relacionados
+
+<CardGroup cols={2}>
+  <Card title="Módulo de Reportes (M4)" icon="file-chart-line" href="/modules/reports">
+    Genera reportes fiscales listos para presentar junto con tus declaraciones.
+  </Card>
+  <Card title="Guía de gestión de alertas" icon="bell" href="/guides/managing-alerts">
+    Aprende a personalizar canales, umbrales y destinatarios de notificaciones en FiscalHost.
+  </Card>
+</CardGroup>

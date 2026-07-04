@@ -1,0 +1,140 @@
+---
+title: "Income Tax Module: Renta Calculation for Rental Hosts in Costa Rica"
+sidebarTitle: "Renta (M2)"
+description: "The Renta module computes Costa Rica's income tax on vacation rental earnings using D-101 brackets, deductions, and annual filing requirements."
+---
+
+El módulo de Renta (M2) de FiscalHost Inteligente CR calcula el Impuesto sobre la Renta aplicable a los ingresos obtenidos por alquiler vacacional en Costa Rica. A lo largo del año fiscal, el módulo acumula ingresos, registra gastos deducibles y determina la base imponible neta que el anfitrión debe declarar en el formulario D-101 ante el Ministerio de Hacienda.
+
+## Impuesto sobre la Renta para ingresos de alquiler en Costa Rica
+
+Bajo la Ley del Impuesto sobre la Renta (Ley N.° 7092) y sus reformas, los ingresos derivados del arrendamiento de bienes inmuebles se clasifican como **rentas de capital inmobiliario**. Esta categoría tributaria aplica una **retención definitiva del 15 %** sobre el ingreso bruto cuando quien alquila no ejerce la actividad como empresa.
+
+Sin embargo, los **anfitriones que gestionan múltiples propiedades o cuya actividad se considera habitual y lucrativa** pueden ser clasificados bajo **Renta de Actividades Lucrativas**, lo que los sujeta a la escala progresiva del D-101 sobre la renta neta (ingresos menos gastos deducibles). El módulo M2 soporta ambos regímenes.
+
+El **año fiscal costarricense** comprende del **1 de octubre al 30 de septiembre** del año siguiente. La declaración anual D-101 vence el **15 de diciembre** del año en que termina el período.
+
+## Regímenes tributarios soportados
+
+| Régimen | Aplica a | Tasa / Escala | Formulario |
+|---|---|---|---|
+| Rentas de Capital Inmobiliario | Persona física con alquiler ocasional | 15 % sobre ingreso bruto (retención definitiva) | D-125 / D-101 |
+| Actividades Lucrativas | Persona física habitual o persona jurídica | Escala progresiva sobre renta neta | D-101 |
+
+<Note>
+**Personas físicas vs. jurídicas:** Las personas físicas (individuos) tributan bajo una escala progresiva con tasas que van del 0 % al 25 % según tramos de renta neta. Las personas jurídicas (sociedades anónimas, SRL) tributan a una tasa fija del **30 %** sobre la utilidad neta o tasas reducidas según el nivel de ingresos brutos. El módulo M2 solicita el tipo de entidad durante la configuración inicial para aplicar el régimen correcto.
+</Note>
+
+## Escala progresiva para personas físicas (Actividades Lucrativas)
+
+Los tramos se actualizan anualmente por la Dirección General de Tributación. Los valores a continuación corresponden al año fiscal 2025–2026 (referencia):
+
+| Tramo de renta neta anual (₡) | Tasa marginal |
+|---|---|
+| Hasta 4,461,000 | 0 % (exento) |
+| 4,461,001 – 6,624,000 | 10 % |
+| 6,624,001 – 11,046,000 | 15 % |
+| 11,046,001 – 22,089,000 | 20 % |
+| Más de 22,089,000 | 25 % |
+
+> Los tramos exactos se publican cada año mediante resolución de la Dirección General de Tributación. Verifica los valores vigentes en `tica.hacienda.go.cr` antes de presentar la declaración.
+
+## Gastos deducibles
+
+Para el régimen de Actividades Lucrativas, la ley permite deducir los gastos **necesarios** para generar la renta. El módulo M2 reconoce las siguientes categorías de deducción:
+
+| Categoría de gasto | Descripción | Deducible |
+|---|---|---|
+| Mantenimiento y reparaciones | Reparaciones al inmueble arrendado | Sí |
+| Depreciación del inmueble | Desgaste anual del activo (2 % anual para edificaciones) | Sí |
+| Seguro de propiedad | Pólizas del INS u otras aseguradoras | Sí |
+| Comisiones de plataforma | Tarifas de Airbnb, Booking.com, VRBO | Sí |
+| Honorarios de administración | Gastos de gestor o administrador de propiedad | Sí |
+| Servicios públicos a cargo del arrendador | Electricidad, agua, internet | Sí |
+| Gastos personales del propietario | Gastos no relacionados con la actividad | No |
+| Mejoras de capital | Ampliaciones o mejoras que aumentan el valor | No (se deprecian) |
+
+## Cálculo de la renta neta imponible
+
+```
+Renta neta imponible = Ingresos brutos − Gastos deducibles
+Impuesto a pagar     = Aplicar escala progresiva sobre Renta neta imponible
+```
+
+### Ejemplo de cálculo (persona física, año fiscal 2025–2026)
+
+```json
+{
+  "año_fiscal": "2025-2026",
+  "regimen": "actividades_lucrativas",
+  "entidad": "persona_fisica",
+  "ingresos_brutos_crc": 12500000,
+  "gastos_deducibles": {
+    "mantenimiento": 800000,
+    "depreciacion": 250000,
+    "seguro": 180000,
+    "comisiones_plataforma": 1250000,
+    "administracion": 600000
+  },
+  "total_gastos_deducibles_crc": 3080000,
+  "renta_neta_imponible_crc": 9420000,
+  "calculo_impuesto": {
+    "tramo_0_4461000_al_0pct": 0,
+    "tramo_4461001_6624000_al_10pct": 216300,
+    "tramo_6624001_9420000_al_15pct": 419400,
+    "impuesto_total_crc": 635700
+  }
+}
+```
+
+## Declaración D-101
+
+La **Declaración Jurada del Impuesto sobre las Utilidades (D-101)** es el formulario anual que consolida todos los ingresos y gastos del año fiscal. Los anfitriones bajo el régimen de Actividades Lucrativas deben presentarla obligatoriamente.
+
+- **Periodicidad:** Anual
+- **Período cubierto:** 1 de octubre – 30 de septiembre
+- **Vencimiento:** 15 de diciembre
+- **Canal:** Portal VET de Hacienda (`tica.hacienda.go.cr`)
+
+El módulo M2 pre-llena los campos del D-101 con los valores calculados durante el año, incluyendo ingresos acumulados, gastos deducibles totales y el impuesto determinado.
+
+## Pagos a cuenta
+
+<Warning>
+Los contribuyentes bajo Actividades Lucrativas están obligados a realizar **pagos a cuenta trimestrales** (también llamados adelantos de impuesto). El monto de cada pago equivale al **25 % del impuesto determinado en la última declaración D-101 presentada**. Los pagos a cuenta vencen en los meses de **junio, septiembre, diciembre y marzo**. No realizarlos en tiempo genera intereses. El módulo M3 (Alertas) te notifica antes de cada vencimiento trimestral.
+</Warning>
+
+## Configuración del módulo
+
+```json
+{
+  "renta": {
+    "año_fiscal_inicio": "10-01",
+    "año_fiscal_fin": "09-30",
+    "entidad": "persona_fisica",
+    "regimen": "actividades_lucrativas",
+    "categorias_deducibles": [
+      "mantenimiento",
+      "depreciacion",
+      "seguro",
+      "comisiones_plataforma",
+      "administracion",
+      "servicios_publicos"
+    ],
+    "tasa_depreciacion_edificacion": 0.02,
+    "tasa_retencion_capital_inmobiliario": 0.15,
+    "fecha_vencimiento_d101": "12-15"
+  }
+}
+```
+
+## Recursos relacionados
+
+<CardGroup cols={2}>
+  <Card title="Módulo IVA (M1)" icon="percent" href="/modules/iva-vat">
+    Consulta cómo el módulo IVA calcula el 13 % de VAT mensual y se integra con el módulo de Renta.
+  </Card>
+  <Card title="Guía de cálculos tributarios" icon="calculator" href="/guides/tax-calculations">
+    Paso a paso sobre cómo FiscalHost aplica fórmulas de renta, brackets y deducciones.
+  </Card>
+</CardGroup>

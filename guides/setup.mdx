@@ -1,0 +1,118 @@
+---
+title: "Set Up FiscalHost Inteligente CR for Your Rental Business"
+sidebarTitle: "Configuración"
+description: "Configure your fiscal profile, tax regime, and rental properties in FiscalHost Inteligente CR to start automating your Costa Rican tax obligations."
+---
+
+FiscalHost Inteligente CR requires a one-time setup to model your business correctly before it can automate IVA calculations, income tax tracking, and compliance alerts. This guide walks you through every configuration step — from registering your fiscal identity to importing your first transaction history — so the system reflects your real obligations under Costa Rican tax law from day one.
+
+## Prerequisites
+
+Before starting the setup wizard, make sure you have the following documents and information on hand:
+
+| Requirement | Description |
+|---|---|
+| **Cédula jurídica / Cédula física** | The tax identification number issued by the Registro Nacional. Persons use a 9-digit cédula física; companies use a 10-digit cédula jurídica. |
+| **Registro ante Hacienda (RUC)** | Your enrollment record with the Ministerio de Hacienda confirming you are an active contributor. |
+| **Actividad Económica code** | The CIIU code that describes your primary economic activity. Vacation rental hosts must use code **5500 – Alojamiento** (see warning below). |
+| **Datos de propiedades** | Cadastral number (número de folio real), address, and current nightly rate for each rental unit. |
+| **Historial de transacciones** | Bank statements or platform export files (Airbnb, VRBO, Booking.com) for the periods you want to import. |
+
+<Warning>
+  Your actividad económica code registered with Hacienda **must be 5500 – Alojamiento** (or include it as a secondary activity) for rental income to be classified correctly. Using an incorrect code may cause the system to apply wrong IVA rates and could expose you to penalties during an audit. Verify and update your economic activity at [ATV – Administración Tributaria Virtual](https://www.hacienda.go.cr/ATV/) before proceeding.
+</Warning>
+
+## Setup Steps
+
+<Steps>
+  ### Create your fiscal profile
+
+  Open FiscalHost Inteligente CR and navigate to **Configuración → Perfil Fiscal**. Fill in the following fields:
+
+  - **Nombre o Razón Social** — your full legal name or company name as it appears on your cédula.
+  - **Número de cédula** — enter your cédula física (9 digits) or cédula jurídica (10 digits) without dashes.
+  - **Tipo de contribuyente** — select **Persona Física** if you operate as an individual, or **Persona Jurídica** if you operate through a corporation (S.A. or S.R.L.).
+  - **Correo electrónico fiscal** — the email registered with Hacienda; this is used for compliance alert notifications.
+  - **Actividad económica** — enter code `5500` and the system will auto-populate the description *Actividades de alojamiento para estancias cortas*.
+
+  Click **Guardar Perfil** to continue.
+
+  ```json
+  {
+    "fiscalProfile": {
+      "legalName": "Inversiones Playa Hermosa S.R.L.",
+      "cedula": "3102987654",
+      "contributorType": "persona_juridica",
+      "fiscalEmail": "contabilidad@playahermosa.cr",
+      "economicActivity": {
+        "code": "5500",
+        "description": "Actividades de alojamiento para estancias cortas"
+      },
+      "haciendaRUC": "3102987654-001",
+      "currency": "CRC"
+    }
+  }
+  ```
+
+  ### Select your tax regime
+
+  Navigate to **Configuración → Régimen Tributario**. FiscalHost Inteligente CR supports the two principal regimes available to vacation rental hosts:
+
+  - **Régimen Tradicional** — full bookkeeping required; you declare actual income and deduct documented expenses. Recommended for hosts with annual income above ₡106 million or with significant deductible expenses (maintenance, commissions, depreciation).
+  - **Régimen de Tributación Simplificada** — simplified calculation based on a fixed factor applied to purchases; designed for small taxpayers. No itemized deductions; reduced administrative burden.
+
+  Select the regime that matches your current enrollment with Hacienda and click **Confirmar Régimen**.
+
+  <Note>
+    The **Régimen de Tributación Simplificada** is only available to taxpayers whose annual gross income does not exceed approximately **₡106,000,000** (this threshold is adjusted periodically by Hacienda resolution). If your rental portfolio generates income above this ceiling, you must operate under the Régimen Tradicional. The system will warn you automatically if your projected income approaches the limit during the fiscal year.
+  </Note>
+
+  ### Register your rental properties
+
+  Navigate to **Propiedades → Agregar Propiedad** and complete one entry per rental unit:
+
+  - **Nombre de la propiedad** — a descriptive name (e.g., "Cabaña Guanacaste Norte").
+  - **Dirección exacta** — full address including province, canton, and district.
+  - **Número de folio real** — the cadastral number from the Registro Nacional (format: `XXX-XXXXXXX-000`).
+  - **Plataforma principal** — select from Airbnb, Booking.com, VRBO, direct rental, or other.
+  - **Tarifa por noche (₡)** — base nightly rate in colones. If you price in USD, enter the amount and select USD; the system applies the Banco Central de Costa Rica (BCCR) reference rate for conversion.
+  - **Fecha de inicio de actividad** — the date you first rented or listed the property.
+
+  Repeat this process for each property you manage. All registered properties appear in the **Panel de Propiedades** dashboard.
+
+  ### Configure fiscal year settings
+
+  Navigate to **Configuración → Año Fiscal**. In Costa Rica, the fiscal year for income tax purposes runs from **October 1 to September 30** (not the calendar year). Confirm the following settings:
+
+  - **Inicio del período fiscal:** 1 de octubre
+  - **Cierre del período fiscal:** 30 de septiembre
+  - **Fecha de declaración de renta:** 15 de diciembre (D-101 submission deadline)
+  - **Moneda base:** CRC (or CRC + USD if you operate in dual currency)
+
+  The system pre-populates these values based on Costa Rican regulations, but you should verify them match your specific Hacienda enrollment dates. Click **Guardar Configuración de Año Fiscal**.
+
+  ### Connect or import your transaction history
+
+  Navigate to **Transacciones → Importar**. You can populate your income history in two ways:
+
+  **Option A — CSV/Excel import:**
+  Export your transaction history from your rental platform (Airbnb, Booking.com, etc.) or your bank, then upload the file. The system maps columns to the required fields: date, description, gross amount, platform fee, and net payout.
+
+  **Option B — Manual entry:**
+  Use **Transacciones → Nueva Transacción** to record reservations individually. Required fields include check-in date, check-out date, number of nights, gross rental amount, and platform fee withheld.
+
+  After import, navigate to **Transacciones → Revisión** to confirm that each transaction is assigned to the correct property and period. Click **Aprobar Importación** to finalize.
+</Steps>
+
+## What Happens Next
+
+Once setup is complete, FiscalHost Inteligente CR begins computing your monthly IVA obligations and your annual income tax position automatically. The **Panel Principal** shows your current tax liability, upcoming deadlines, and any data gaps that need attention.
+
+<CardGroup cols={2}>
+  <Card title="Inicio rápido" icon="rocket" href="/quickstart">
+    Review the quickstart guide for a condensed overview of the main dashboard and first-run experience.
+  </Card>
+  <Card title="Cálculos Tributarios" icon="calculator" href="/guides/tax-calculations">
+    Learn how IVA and income tax are computed from your rental income, including worked numeric examples.
+  </Card>
+</CardGroup>

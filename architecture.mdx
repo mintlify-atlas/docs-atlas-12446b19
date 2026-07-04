@@ -1,0 +1,227 @@
+---
+title: "System Architecture: FiscalHost Inteligente CR Module Design"
+sidebarTitle: "Arquitectura"
+description: "Explore the modular M1–M5 architecture of FiscalHost Inteligente CR, including data flow, module responsibilities, and the CI/CD pipeline."
+---
+
+FiscalHost Inteligente CR está construido sobre una arquitectura modular de cinco componentes independientes pero interconectados. Cada módulo (M1–M5) encapsula una responsabilidad fiscal bien delimitada, lo que permite desarrollar, probar y desplegar cambios en una parte del sistema sin afectar a las demás. Esta separación es especialmente importante en un sistema fiscal donde la corrección de los cálculos debe poder verificarse de forma aislada antes de integrarse al flujo completo.
+
+<Note>
+  FiscalHost Inteligente CR es un proyecto académico de ingeniería de software desarrollado en la **Universidad Fidélitas**, Costa Rica, por un equipo de tres desarrolladores: José Andrés Acevedo, Hugo Alberto Villarreal y Enzo Josef Morales. El calendario de desarrollo abarca de febrero a diciembre de 2026.
+</Note>
+
+## Módulos del sistema (M1–M5)
+
+La siguiente tabla resume los cinco módulos funcionales, sus nombres y las responsabilidades que cada uno cubre dentro del dominio fiscal costarricense:
+
+| Módulo | Nombre | Responsabilidad |
+|--------|--------|-----------------|
+| **M1** | IVA | Cálculo del IVA al 13% sobre los ingresos de alquiler vacacional. Genera los datos estructurados necesarios para la preparación y presentación del formulario D-104 ante la Dirección General de Tributación. |
+| **M2** | Renta | Cálculo del Impuesto sobre la Renta conforme a la Ley 7092. Procesa ingresos netos, aplica deducciones permitidas y calcula la obligación tributaria anual para la declaración D-101. |
+| **M3** | Alertas | Sistema de alertas y notificaciones de vencimientos tributarios. Monitorea los plazos de presentación del D-104 (mensual, día 15 del mes siguiente) y del D-101 (anual, 15 de diciembre), y despacha notificaciones por correo electrónico con anticipación configurable. |
+| **M4** | Reportes | Generación de reportes fiscales consolidados por período. Produce documentos en formatos PDF y CSV que integran los resultados de M1, M2 y M3 para uso del anfitrión o entrega a su contador. |
+| **M5** | Importación | Importación y normalización de datos de ingresos desde archivos CSV. Compatible con los formatos de exportación de Airbnb y Booking.com. Transforma los datos crudos al esquema interno del sistema y los entrega a M1 y M2 para procesamiento. |
+
+## Flujo de datos
+
+El ciclo de procesamiento fiscal sigue una secuencia lineal con puntos de entrada alternativos (manual o importación) y una etapa de orquestación final que une cálculo, reporte y alertas:
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│                        ENTRADA DE DATOS                            │
+├──────────────────────────┬─────────────────────────────────────────┤
+│   Registro manual        │   Importación CSV (M5)                  │
+│   (formulario web)       │   Airbnb / Booking.com / personalizado  │
+└──────────────┬───────────┴───────────────────┬─────────────────────┘
+               │                               │
+               └───────────────┬───────────────┘
+                               │
+                               ▼
+                   ┌─────────────────────┐
+                   │  Modelo de Ingresos │
+                   │  (base imponible)   │
+                   └────────┬────────────┘
+                            │
+               ┌────────────┴────────────┐
+               │                         │
+               ▼                         ▼
+   ┌───────────────────┐     ┌───────────────────┐
+   │   M1 — IVA        │     │   M2 — Renta      │
+   │   Cálculo 13%     │     │   Cálculo D-101   │
+   │   Datos D-104     │     │   Ley 7092        │
+   └─────────┬─────────┘     └─────────┬─────────┘
+             │                         │
+             └────────────┬────────────┘
+                          │
+                          ▼
+              ┌───────────────────────┐
+              │   M4 — Reportes       │
+              │   Consolidación de    │
+              │   resultados M1 + M2  │
+              │   Exportación PDF/CSV │
+              └──────────┬────────────┘
+                         │
+                         ▼
+              ┌───────────────────────┐
+              │   M3 — Alertas        │
+              │   Programación de     │
+              │   vencimientos D-104  │
+              │   y D-101             │
+              └───────────────────────┘
+```
+
+### Descripción del flujo paso a paso
+
+1. **Ingreso de datos:** Los datos de ingresos entran al sistema ya sea mediante el formulario web (entrada manual) o a través del módulo M5, que normaliza archivos CSV al esquema interno común.
+
+2. **Modelo de ingresos:** Los datos normalizados se almacenan en el modelo de ingresos, que sirve como fuente única de verdad para los módulos de cálculo. Cada registro contiene fecha, monto bruto, plataforma de origen y estado de confirmación.
+
+3. **Cálculo paralelo M1 y M2:** El módulo M1 procesa los ingresos del período seleccionado aplicando la tasa de IVA del 13% y computando el crédito fiscal. El módulo M2 agrega los ingresos del ejercicio fiscal completo y aplica las tablas de renta según la Ley 7092. Ambos módulos pueden ejecutarse de forma independiente.
+
+4. **Generación de reportes (M4):** Una vez que M1 y/o M2 completan sus cálculos, el módulo M4 consolida los resultados en un reporte estructurado. El reporte incluye el detalle de ingresos, los impuestos calculados, los créditos aplicados y el saldo neto a pagar por período.
+
+5. **Programación de alertas (M3):** Tras confirmar el cálculo de un período, M3 registra las fechas límite de presentación asociadas y programa notificaciones con antelación configurable (por defecto: 7 días antes del vencimiento). Las alertas se despachan por correo electrónico al anfitrión y, opcionalmente, a un CPA designado.
+
+## Estrategia de ramas (Git Flow)
+
+El equipo utiliza una estrategia Git Flow adaptada al tamaño del equipo y al calendario académico. El control de versiones es el eje central del flujo de trabajo de desarrollo.
+
+```
+main ──────────────────────────────────────────────────► producción estable
+  │
+  └─── develop ──────────────────────────────────────► integración continua
+         │
+         ├─── feature/importacion-csv ──► PR → develop
+         ├─── feature/calculo-renta    ──► PR → develop
+         ├─── feature/alertas-email    ──► PR → develop
+         └─── hotfix/error-calculo-iva ──► PR → main + develop
+```
+
+| Rama | Propósito | Protección | Ciclo de vida |
+|------|-----------|------------|---------------|
+| `main` | Código estable en producción | PR con aprobación + checks CI/CD aprobados; sin push directo | Permanente |
+| `develop` | Integración de nuevas funcionalidades | PR con aprobación; sin push directo | Permanente |
+| `feature/*` | Desarrollo de una funcionalidad específica por módulo | Sin protección especial (trabajo local del desarrollador) | Temporal |
+| `hotfix/*` | Corrección urgente de errores en producción | PR hacia `main` y `develop` | Temporal |
+
+### Flujo de trabajo por funcionalidad
+
+1. Se documenta el requerimiento como un **Issue** en GitHub, con la etiqueta de módulo y tipo correspondiente.
+2. Se crea una rama `feature/<nombre-descriptivo>` desde `develop`.
+3. El desarrollador implementa la funcionalidad y abre un **Pull Request** hacia `develop`.
+4. El PR requiere al menos una aprobación de un compañero de equipo.
+5. Una vez integrado y probado en `develop`, se libera hacia `main` mediante un PR aprobado.
+6. Los **hotfixes** se bifurcan desde `main`, se corrigen y se fusionan de vuelta a `main` y `develop` simultáneamente.
+
+## Pipeline de CI/CD con GitHub Actions
+
+Cada push a `main` o `develop`, y cada Pull Request abierto contra estas ramas, dispara automáticamente el pipeline de integración y despliegue continuo:
+
+```yaml
+# .github/workflows/ci-cd.yml (estructura representativa)
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    name: Compilación
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Compilar proyecto
+        run: npm run build
+
+  test:
+    name: Pruebas unitarias e integración
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Ejecutar suite de pruebas
+        run: npm test -- --coverage
+      - name: Publicar reporte de cobertura
+        uses: codecov/codecov-action@v4
+
+  deploy:
+    name: Despliegue
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar a producción
+        run: npm run deploy
+```
+
+Los tres jobs se ejecutan en secuencia: **build → test → deploy**. El deploy solo se activa en pushes a `main`, no en `develop` ni en Pull Requests.
+
+## Gestión del proyecto con GitHub Projects
+
+El tablero Kanban del proyecto en GitHub Projects organiza el trabajo en cuatro columnas que reflejan el estado de cada Issue o tarea:
+
+```
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│   To Do     │  │ In Progress │  │   Review    │  │    Done     │
+├─────────────┤  ├─────────────┤  ├─────────────┤  ├─────────────┤
+│ Issue #12   │  │ Issue #8    │  │ PR #10      │  │ Issue #5    │
+│ M3: alertas │  │ M1: crédito │  │ M5: mapeo   │  │ M1: cálculo │
+│ por correo  │  │ proporcional│  │ columnas CSV│  │ base IVA    │
+│             │  │             │  │             │  │             │
+│ Issue #14   │  │ Issue #9    │  │             │  │ Issue #3    │
+│ M4: export  │  │ M2: tabla   │  │             │  │ M5: parser  │
+│ PDF         │  │ Renta Ley   │  │             │  │ CSV básico  │
+│             │  │ 7092        │  │             │  │             │
+└─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘
+```
+
+## Etiquetas de Issues por módulo y tipo
+
+Todos los Issues del repositorio utilizan un sistema de etiquetas de dos dimensiones para facilitar el filtrado y la trazabilidad:
+
+**Por módulo:**
+
+| Etiqueta | Color | Alcance |
+|----------|-------|---------|
+| `M1` | Azul | Issues relacionados con el módulo IVA |
+| `M2` | Verde | Issues relacionados con el módulo Renta |
+| `M3` | Amarillo | Issues relacionados con el módulo Alertas |
+| `M4` | Naranja | Issues relacionados con el módulo Reportes |
+| `M5` | Morado | Issues relacionados con el módulo Importación CSV |
+
+**Por tipo:**
+
+| Etiqueta | Descripción |
+|----------|-------------|
+| `feature` | Nueva funcionalidad o mejora de una existente |
+| `bug` | Error de comportamiento o cálculo incorrecto |
+| `documentation` | Documentación técnica o de usuario |
+| `testing` | Casos de prueba, cobertura o fixtures |
+
+Un Issue puede llevar múltiples etiquetas. Por ejemplo, un error en el cálculo del crédito fiscal proporcional del módulo IVA se etiquetaría como `M1` + `bug`.
+
+## Explora más
+
+<CardGroup cols={2}>
+  <Card
+    title="Flujo de Trabajo Git"
+    icon="code-branch"
+    href="/reference/git-workflow"
+  >
+    Referencia detallada de la estrategia Git Flow: convenciones de nombres de ramas, plantillas de PR y política de merge.
+  </Card>
+  <Card
+    title="Módulo IVA (M1)"
+    icon="calculator"
+    href="/modules/iva-vat"
+  >
+    Documentación técnica completa del módulo M1: algoritmo de cálculo, estructura de datos de entrada/salida y casos de prueba.
+  </Card>
+</CardGroup>

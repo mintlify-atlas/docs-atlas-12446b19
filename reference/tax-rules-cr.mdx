@@ -1,0 +1,164 @@
+---
+title: "Costa Rica Tax Rules Reference for Vacation Rental Hosts"
+sidebarTitle: "Reglas Fiscales CR"
+description: "Reference guide to Costa Rica's tax obligations for vacation rental hosts: IVA, income tax rates, filing forms, deadlines, and Ministerio de Hacienda requirements."
+---
+
+Vacation rental hosts operating in Costa Rica are subject to two primary tax regimes administered by the Ministerio de Hacienda: the Impuesto al Valor Agregado (IVA) on rental services, and the Impuesto sobre la Renta on net or gross rental income. This reference compiles the key legal provisions, rates, forms, deadlines, and portals you need to stay compliant — all drawn from the current legislation and the official ATV filing system. FiscalHost Inteligente CR automates the calculations described here, but you should use this page to understand the rules behind every figure the system produces.
+
+<Warning>
+El incumplimiento de las obligaciones fiscales en Costa Rica genera **intereses de mora del 1 % mensual** sobre el impuesto no pagado, además de multas por presentación tardía que pueden equivaler al 50 % o al 100 % del impuesto determinado, según la gravedad de la infracción. Presentar declaraciones incorrectas también expone al contribuyente a ajustes y sanciones por parte de la Dirección General de Tributación. Mantenga sus declaraciones al día y conserve los comprobantes de pago.
+</Warning>
+
+---
+
+## Marco legal
+
+Costa Rica's tax obligations for vacation rental hosts rest on two foundational laws:
+
+- **Ley del Impuesto al Valor Agregado — Ley N.° 9635** (*Ley de Fortalecimiento de las Finanzas Públicas*, vigente desde julio 2019): establece el IVA del 13 % sobre la prestación de servicios en el territorio nacional, incluyendo los servicios de hospedaje y alojamiento turístico de corto plazo. Derogó y sustituyó el antiguo Impuesto General sobre las Ventas.
+- **Ley del Impuesto sobre la Renta — Ley N.° 7092** y sus reformas: grava las rentas de capital inmobiliario provenientes del arrendamiento de bienes inmuebles ubicados en Costa Rica, ya sea bajo el régimen tradicional (utilidad neta) o el simplificado (retención definitiva sobre ingreso bruto).
+
+Ambas leyes son administradas por la **Dirección General de Tributación (DGT)** a través del portal ATV: [atv.hacienda.go.cr](https://atv.hacienda.go.cr).
+
+---
+
+## Impuesto al Valor Agregado (IVA)
+
+### Tarifa y base imponible
+
+Los servicios de hospedaje y alojamiento vacacional de corto plazo están gravados con la **tarifa general del 13 %** del IVA, clasificados dentro de la tarifa 13 del nomenclátor arancelario. La base imponible es el precio total cobrado al huésped por la estadía, incluyendo cargos adicionales por limpieza u otros servicios accesorios cobrados de forma conjunta con el alojamiento.
+
+Los ingresos en moneda extranjera (por ejemplo, reservas de Airbnb en USD) deben convertirse al **tipo de cambio de referencia del Banco Central de Costa Rica (BCCR)** vigente en la fecha de la transacción antes de calcular el IVA en colones.
+
+### Declaración y pago — Formulario D-104
+
+| Detalle | Valor |
+|---|---|
+| **Formulario** | D-104 — Declaración Jurada del Impuesto al Valor Agregado |
+| **Frecuencia** | Mensual |
+| **Vencimiento** | Día 15 del mes calendario siguiente al período declarado |
+| **Portal** | [atv.hacienda.go.cr](https://atv.hacienda.go.cr) |
+| **Tarifa aplicable** | 13 % sobre el total de ingresos por hospedaje |
+
+Si el día 15 cae en sábado, domingo o feriado, el vencimiento se traslada al siguiente día hábil. FiscalHost Inteligente CR calcula este desplazamiento automáticamente al generar las alertas.
+
+### Crédito fiscal
+
+Los contribuyentes bajo el Régimen Tradicional pueden acreditar el IVA soportado en compras y gastos directamente relacionados con la actividad de hospedaje (suministros, servicios de mantenimiento, comisiones de plataformas que incluyan IVA en su factura electrónica, etc.), reduciendo el impuesto a pagar.
+
+---
+
+## Impuesto sobre la Renta
+
+### Naturaleza del ingreso
+
+Los ingresos por arrendamiento vacacional se clasifican como **rentas de capital inmobiliario** conforme al artículo 27 bis de la Ley del Impuesto sobre la Renta. El tratamiento fiscal depende del régimen en que esté inscrito el contribuyente.
+
+### Régimen Simplificado — Retención definitiva
+
+Para contribuyentes acogidos al Régimen Simplificado o para no residentes con ingresos de fuente costarricense, se aplica una **retención definitiva del 15 %** sobre el ingreso bruto. Esta retención sustituye el impuesto sobre la renta; no se presentan deducciones ni se liquida utilidad neta.
+
+### Régimen Tradicional — Tarifa progresiva
+
+Las personas físicas bajo el Régimen Tradicional determinan su base imponible como la diferencia entre ingresos brutos y gastos deducibles autorizados. Sobre esa utilidad se aplica la siguiente escala progresiva (vigente para el período fiscal 2025–2026; verifique en ATV las tablas actualizadas para cada año):
+
+| Tramo de renta neta anual (CRC) | Tarifa marginal |
+|---|---|
+| Hasta ₡3 819 000 | Exento |
+| ₡3 819 001 – ₡5 726 000 | 10 % |
+| ₡5 726 001 – ₡9 543 000 | 15 % |
+| ₡9 543 001 – ₡19 084 000 | 20 % |
+| Más de ₡19 084 000 | 25 % |
+
+Las personas jurídicas (sociedades) tributan a una tarifa proporcional del **30 %** sobre la renta neta, con algunas tarifas reducidas para PYME según los rangos de ingresos brutos definidos por Hacienda.
+
+### Año fiscal
+
+El período fiscal costarricense no coincide con el año calendario:
+
+- **Inicio:** 1 de octubre
+- **Cierre:** 30 de septiembre del año siguiente
+
+FiscalHost Inteligente CR usa este período para acumular ingresos y gastos y generar el reporte de cierre anual.
+
+### Declaración anual — Formulario D-101
+
+| Detalle | Valor |
+|---|---|
+| **Formulario** | D-101 — Declaración Jurada del Impuesto sobre la Renta |
+| **Frecuencia** | Anual |
+| **Vencimiento** | 15 de diciembre del año en que cierra el período fiscal |
+| **Portal** | [atv.hacienda.go.cr](https://atv.hacienda.go.cr) |
+
+### Pagos parciales (pagos a cuenta) — Formulario D-150
+
+Los contribuyentes bajo el Régimen Tradicional que superen los umbrales establecidos por Hacienda deben realizar **pagos a cuenta trimestrales** calculados sobre el impuesto determinado en el período anterior. Estos pagos se presentan mediante el formulario D-150 y se acreditan al saldo final de la declaración D-101.
+
+| Detalle | Valor |
+|---|---|
+| **Formulario** | D-150 — Pagos a Cuenta del Impuesto sobre la Renta |
+| **Frecuencia** | Trimestral |
+| **Portal** | [atv.hacienda.go.cr](https://atv.hacienda.go.cr) |
+
+---
+
+## Declaración Informativa — D-151
+
+Los contribuyentes que realicen **pagos a terceros** (propietarios, contratistas, proveedores de servicios) por montos superiores a los umbrales definidos por la DGT deben presentar la **declaración informativa D-151** de forma anual. Esta declaración lista los pagos efectuados y los beneficiarios, y permite a Hacienda cruzar información con las declaraciones de renta de los receptores.
+
+| Detalle | Valor |
+|---|---|
+| **Formulario** | D-151 — Declaración Informativa de Clientes, Proveedores y Gastos Específicos |
+| **Frecuencia** | Anual |
+| **Portal** | [atv.hacienda.go.cr](https://atv.hacienda.go.cr) |
+
+---
+
+## Resumen de obligaciones fiscales
+
+La siguiente tabla consolida todas las obligaciones fiscales relevantes para un anfitrión de alquiler vacacional en Costa Rica:
+
+| Obligación | Formulario | Frecuencia | Vencimiento | Portal |
+|---|---|---|---|---|
+| Declaración y pago del IVA | D-104 | Mensual | Día 15 del mes siguiente | [atv.hacienda.go.cr](https://atv.hacienda.go.cr) |
+| Pagos a cuenta de Renta | D-150 | Trimestral | Según cronograma DGT | [atv.hacienda.go.cr](https://atv.hacienda.go.cr) |
+| Declaración anual de Renta | D-101 | Anual | 15 de diciembre | [atv.hacienda.go.cr](https://atv.hacienda.go.cr) |
+| Declaración informativa | D-151 | Anual | Según cronograma DGT | [atv.hacienda.go.cr](https://atv.hacienda.go.cr) |
+
+---
+
+## Moneda y tipo de cambio
+
+Todas las declaraciones ante Hacienda se presentan en **Colones Costarricenses (CRC)**. Las transacciones originadas en moneda extranjera — como reservas pagadas en USD a través de Airbnb, Booking.com o VRBO — deben convertirse al colón usando el **tipo de cambio de referencia de venta publicado por el Banco Central de Costa Rica (BCCR)** en la fecha en que se recibió o acreditó el ingreso.
+
+FiscalHost Inteligente CR aplica este tipo de cambio automáticamente al importar transacciones en moneda extranjera. El tipo de cambio utilizado queda registrado en el detalle de cada transacción para efectos de auditoría.
+
+---
+
+## Régimen de sanciones
+
+| Infracción | Sanción |
+|---|---|
+| Mora en el pago del impuesto | 1 % mensual sobre el impuesto pendiente (interés acumulado) |
+| Declaración tardía sin pago | Multa equivalente al 50 % del impuesto determinado |
+| Declaración tardía con pago | Multa reducida conforme al tiempo de atraso |
+| Omisión de declaración | Multa hasta el 100 % del impuesto determinado |
+| Declaración incorrecta | Ajuste más intereses y eventual sanción por diferencia |
+
+<Note>
+Las reglas fiscales costarricenses están sujetas a modificaciones por parte del Ministerio de Hacienda y la Asamblea Legislativa. Los umbrales de exención, las tarifas progresivas de renta y los plazos de declaración pueden cambiar cada año fiscal. **Verifique siempre la información vigente en el portal oficial ATV:** [atv.hacienda.go.cr](https://atv.hacienda.go.cr) antes de presentar cualquier declaración.
+</Note>
+
+---
+
+## Módulos relacionados
+
+<CardGroup cols={2}>
+  <Card title="Módulo IVA" icon="percent" href="/modules/iva-vat">
+    Conoce cómo FiscalHost Inteligente CR calcula, acumula y prepara el resumen mensual del IVA para tu declaración D-104.
+  </Card>
+  <Card title="Módulo Renta" icon="chart-line" href="/modules/income-tax">
+    Aprende cómo el sistema rastrea ingresos, clasifica gastos deducibles y estima tu obligación de Impuesto sobre la Renta.
+  </Card>
+</CardGroup>

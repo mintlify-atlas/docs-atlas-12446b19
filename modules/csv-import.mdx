@@ -1,0 +1,118 @@
+---
+title: "CSV Import Module: Bulk-Load Rental Transactions into FiscalHost"
+sidebarTitle: "Importación CSV (M5)"
+description: "The CSV Import module lets vacation rental hosts bulk-import transaction data from Airbnb, Booking.com, and other platforms into FiscalHost Inteligente CR."
+---
+
+El módulo de Importación CSV (M5) de FiscalHost Inteligente CR elimina la necesidad de ingresar manualmente cada reserva. Los anfitriones descargan el reporte de transacciones de su plataforma de alquiler (Airbnb, Booking.com, VRBO u otras), lo ajustan al formato requerido si es necesario, y lo cargan en FiscalHost. El sistema valida cada fila, mapea los campos a las categorías fiscales correctas y los pone a disposición de los módulos M1 (IVA) y M2 (Renta) para el cálculo automático de impuestos.
+
+## ¿Por qué existe la importación CSV?
+
+Las plataformas de alquiler vacacional generan decenas o cientos de transacciones por mes. Registrar cada una a mano aumenta el riesgo de errores y consume tiempo valioso. M5 resuelve este problema permitiendo importaciones masivas en un solo paso. El proceso es compatible con los exportes nativos de las principales plataformas y con cualquier sistema contable o hoja de cálculo que pueda guardar datos en formato CSV.
+
+## Plataformas soportadas
+
+| Plataforma | Notas de compatibilidad |
+|---|---|
+| **Airbnb** | Usar el reporte de "Historial de transacciones" en CSV desde la sección de Anfitrión → Finanzas |
+| **Booking.com** | Exportar desde "Finanzas → Extracto de reservas" en formato CSV |
+| **VRBO / Vrbo** | Exportar desde "Pagos → Historial de pagos" en formato CSV |
+| **CSV genérico** | Cualquier plataforma o sistema contable, siempre que se use el esquema de columnas de FiscalHost |
+
+Para Airbnb y Booking.com, FiscalHost incluye perfiles de mapeo predefinidos que traducen automáticamente los encabezados nativos de cada plataforma al esquema interno. Para VRBO y fuentes genéricas, el mapeo se configura manualmente durante el paso de importación.
+
+## Esquema de columnas del CSV
+
+### Columnas requeridas
+
+Estas columnas deben estar presentes en cada fila; si falta alguna, la fila es rechazada durante la validación.
+
+| Columna | Formato | Descripción |
+|---|---|---|
+| `fecha` | `YYYY-MM-DD` | Fecha de la transacción o del cobro de la reserva |
+| `descripcion` | Texto libre (máx. 255 caracteres) | Descripción de la reserva o el servicio |
+| `monto_bruto` | Número decimal (ej. `120000.00`) | Monto total cobrado antes de descuentos o comisiones |
+| `moneda` | `CRC` o `USD` | Código ISO 4217 de la moneda de la transacción |
+| `tipo_ingreso` | `gravado_iva` \| `exento` \| `renta_capital` | Clasificación fiscal del ingreso |
+
+### Columnas opcionales
+
+Si estas columnas se incluyen, M5 las utiliza para enriquecer los registros; si no están presentes, el sistema usa valores por defecto o deja el campo en blanco.
+
+| Columna | Formato | Descripción | Valor por defecto |
+|---|---|---|---|
+| `reserva_id` | Texto (ej. `HM3X9P`) | Código de confirmación de la reserva en la plataforma | _(vacío)_ |
+| `plataforma` | Texto (ej. `Airbnb`) | Nombre de la plataforma de origen | `Genérico` |
+| `comision` | Número decimal | Comisión cobrada por la plataforma en la misma moneda | `0.00` |
+| `neto_recibido` | Número decimal | `monto_bruto − comision`; el sistema lo calcula si se omite | _calculado_ |
+
+## Ejemplo de archivo CSV
+
+```csv
+fecha,descripcion,monto_bruto,moneda,tipo_ingreso,reserva_id,plataforma,comision,neto_recibido
+2026-05-03,Reserva fin de semana - Cabaña Los Sueños,120000.00,CRC,gravado_iva,HM3X9P,Airbnb,15600.00,104400.00
+2026-05-10,Reserva 7 noches - Apto Vista Mar,350000.00,CRC,gravado_iva,BK8821A,Booking.com,45500.00,304500.00
+2026-05-18,Servicio de limpieza adicional,25000.00,CRC,exento,,Directo,0.00,25000.00
+```
+
+## Pasos de importación
+
+<Steps>
+  <Step title="Preparar el archivo CSV">
+    Descarga el reporte de transacciones desde tu plataforma de alquiler. Si usas Airbnb o Booking.com, el perfil de mapeo predefinido de FiscalHost reconocerá los encabezados nativos. Si tu fuente es VRBO u otra, abre el archivo en una hoja de cálculo y renombra las columnas al esquema requerido (ver tabla de columnas requeridas). Guarda el archivo en formato CSV con codificación **UTF-8** y separador de **coma**.
+  </Step>
+  <Step title="Cargar el archivo en FiscalHost">
+    En el panel de FiscalHost, navega a **Importación → Cargar CSV**. Arrastra el archivo al área de carga o usa el botón "Seleccionar archivo". El sistema acepta archivos de hasta **10 MB** por importación. Si tienes más de un mes de transacciones, se recomienda un archivo por mes.
+  </Step>
+  <Step title="Seleccionar el perfil de mapeo">
+    Elige la plataforma de origen en el menú desplegable (**Airbnb**, **Booking.com**, **VRBO**, **Genérico**). Para el perfil Genérico, el sistema muestra un asistente visual donde asignas cada columna de tu archivo al campo correspondiente de FiscalHost. Confirma el mapeo antes de continuar.
+  </Step>
+  <Step title="Validar los datos">
+    FiscalHost analiza cada fila del archivo y muestra un informe de validación con tres categorías: **Válidas** (listas para importar), **Con advertencias** (importables pero con datos incompletos) y **Con errores** (no importables). Revisa las filas con errores y corrígelas en el archivo original o edítalas directamente en la tabla de previsualización antes de continuar.
+  </Step>
+  <Step title="Confirmar la importación">
+    Haz clic en **Confirmar importación**. El sistema inserta las filas válidas y con advertencias aceptadas en la base de datos, las marca con el identificador de la sesión de importación y las pone a disposición de M1 y M2 para los cálculos del período correspondiente. Las filas rechazadas quedan en el log de errores para revisión posterior.
+  </Step>
+</Steps>
+
+## Reglas de validación
+
+| Campo | Regla | Acción si falla |
+|---|---|---|
+| `fecha` | Formato `YYYY-MM-DD`; no puede ser fecha futura | Error — fila rechazada |
+| `monto_bruto` | Número positivo mayor que cero | Error — fila rechazada |
+| `moneda` | Solo `CRC` o `USD` | Error — fila rechazada |
+| `tipo_ingreso` | Debe ser `gravado_iva`, `exento` o `renta_capital` | Error — fila rechazada |
+| `descripcion` | No puede estar vacía; máximo 255 caracteres | Error — fila rechazada |
+| `comision` | Número ≥ 0; no puede superar `monto_bruto` | Advertencia — importable |
+| `neto_recibido` | Si se provee, debe ser igual a `monto_bruto − comision` ± 1 CRC | Advertencia — importable |
+| `reserva_id` | Sin restricción de formato | Ninguna (campo informativo) |
+
+## Manejo de errores e importaciones parciales
+
+Si el archivo contiene filas con errores y filas válidas, FiscalHost realiza una **importación parcial**: procesa las filas válidas y rechaza las erróneas. El resultado de la importación incluye:
+
+- Número de filas importadas exitosamente
+- Número de filas rechazadas con el motivo de cada rechazo
+- Un archivo CSV de errores descargable con las filas problemáticas y una columna adicional `error_descripcion`
+
+Esto permite al usuario corregir únicamente las filas fallidas y reimportarlas sin duplicar las ya procesadas, gracias al campo `reserva_id` que actúa como clave de deduplicación.
+
+<Warning>
+Cuando importas transacciones en **USD**, FiscalHost convierte los montos a colones costarricenses (CRC) usando el tipo de cambio de referencia del **Banco Central de Costa Rica (BCCR)** correspondiente a la fecha de la transacción. Esta conversión es automática, pero la tasa aplicada queda registrada en el detalle de cada transacción para transparencia. Si la fecha de la transacción es anterior a los datos de tipo de cambio disponibles, el sistema solicita que ingreses la tasa manualmente. Para declaraciones ante Hacienda, verifica siempre que el tipo de cambio utilizado sea el oficial del BCCR.
+</Warning>
+
+<Tip>
+Conserva los archivos CSV originales descargados de cada plataforma sin modificaciones. En caso de una auditoría del Ministerio de Hacienda, estos archivos sirven como evidencia de origen de los ingresos declarados. Guárdalos organizados por mes y plataforma, en la misma carpeta donde archivas las facturas electrónicas del período.
+</Tip>
+
+## Recursos relacionados
+
+<CardGroup cols={2}>
+  <Card title="Guía de configuración inicial" icon="gear" href="/guides/setup">
+    Configura tu cuenta, conecta plataformas y realiza tu primera importación CSV en FiscalHost.
+  </Card>
+  <Card title="Módulo de Reportes (M4)" icon="file-chart-line" href="/modules/reports">
+    Una vez importadas tus transacciones, genera reportes fiscales listos para Hacienda.
+  </Card>
+</CardGroup>

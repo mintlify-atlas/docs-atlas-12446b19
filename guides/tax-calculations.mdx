@@ -1,0 +1,227 @@
+---
+title: "How to Calculate IVA and Income Tax in FiscalHost Inteligente CR"
+sidebarTitle: "Cálculos Tributarios"
+description: "Learn how FiscalHost Inteligente CR calculates IVA (13%) and income tax for vacation rental income using Costa Rica's tax rules."
+---
+
+Vacation rental hosts in Costa Rica are subject to two principal taxes: the **Impuesto al Valor Agregado (IVA)** declared monthly via form D-104, and the **Impuesto sobre la Renta (ISR)** declared annually via form D-101. FiscalHost Inteligente CR automates both calculations using the transaction data you register, applying the correct rates and deductions defined by the Ministerio de Hacienda. This guide explains how each calculation works, how to trigger it in the system, and how to handle common edge cases like USD income and partial-month rentals.
+
+## Overview of the Two Main Taxes
+
+| Tax | Rate | Declaration Form | Filing Frequency | Deadline |
+|---|---|---|---|---|
+| IVA (Valor Agregado) | 13% on gross rental income | D-104 | Monthly | Last business day of following month |
+| Renta (Income Tax) | 15% general rate (brackets may apply) | D-101 | Annual | December 15 |
+| Pagos a cuenta (advance) | ~25% of prior year's renta | — | Quarterly | March, June, September, December |
+
+<Info>
+  All rental income from short-term accommodation (estancias cortas) — regardless of the platform used — is subject to IVA at the full 13% rate under the Ley del Impuesto al Valor Agregado (Ley 9635). There are no reduced rates for vacation rentals.
+</Info>
+
+## IVA Calculation
+
+IVA is applied to the **gross rental income** received each month. The tax collected must be remitted to Hacienda by the last business day of the following calendar month via the D-104 declaration.
+
+### How the system calculates IVA
+
+FiscalHost Inteligente CR sums all rental income recorded in the selected calendar month, applies the 13% rate, and nets out any IVA credits on qualifying purchases (crédito fiscal) to produce the final payable amount.
+
+```
+IVA Repercutido   = Ingresos brutos del mes × 0.13
+IVA Soportado     = IVA pagado en compras con derecho a crédito fiscal
+IVA a Pagar (D-104) = IVA Repercutido − IVA Soportado
+```
+
+### Worked example
+
+A host receives ₡500,000 in rental income during June and pays ₡15,000 in IVA on deductible supplies (cleaning products, maintenance materials) for the same period:
+
+| Concept | Amount (₡) |
+|---|---|
+| Ingresos brutos de alquiler | 500,000 |
+| IVA repercutido (× 0.13) | 65,000 |
+| IVA soportado (crédito fiscal) | − 15,000 |
+| **IVA neto a declarar (D-104)** | **50,000** |
+
+The ₡50,000 is the figure you enter (or that FiscalHost auto-populates) in the D-104 declaration on ATV for the month of June.
+
+## Income Tax (Renta) Calculation
+
+Income tax is calculated annually over the Costa Rican fiscal year (October 1 – September 30). The taxable base is your **net income** — gross rental revenue minus allowed deductions — and the general rate for rental income under the Régimen Tradicional is **15%**.
+
+### Allowed deductions for vacation rental hosts
+
+The following expenses are deductible when properly documented with electronic invoices (facturas electrónicas) from registered contributors:
+
+- Property maintenance and repairs (mantenimiento y reparaciones)
+- Platform commissions and service fees (Airbnb, Booking.com, VRBO)
+- Depreciation on furniture and equipment (depreciación de activos)
+- Property insurance premiums (seguros de la propiedad)
+- Utilities directly attributable to the rental (servicios públicos)
+- Accounting and legal fees (honorarios profesionales)
+- Municipal taxes and national property taxes (impuesto territorial)
+- Cleaning and laundry services (servicios de limpieza)
+
+### Worked example
+
+A host earns ₡6,000,000 in gross rental income over the fiscal year and has ₡1,200,000 in documented deductible expenses:
+
+| Concept | Amount (₡) |
+|---|---|
+| Ingresos brutos anuales | 6,000,000 |
+| Deducciones autorizadas | − 1,200,000 |
+| **Renta neta imponible** | **4,800,000** |
+| Impuesto sobre la renta (× 15%) | 720,000 |
+| Pagos a cuenta realizados | − 250,000 |
+| **Renta a pagar (D-101)** | **470,000** |
+
+The pagos a cuenta (advance payments made during the year) are credited against the final annual tax liability.
+
+## Triggering a Calculation in the System
+
+<Steps>
+  ### Open the calculation module
+
+  From the **Panel Principal**, click **Calcular Impuestos** in the top navigation bar, or navigate to **Impuestos → Nueva Liquidación**.
+
+  ### Select the tax type and period
+
+  Choose between **IVA (Mensual)** or **Renta (Anual)**. Then select the specific period:
+
+  - For IVA: choose the calendar month (e.g., Junio 2026).
+  - For Renta: choose the fiscal year (e.g., Oct 2025 – Sep 2026).
+
+  ### Review auto-populated figures
+
+  The system loads all transactions registered for the selected period and displays:
+
+  - Total gross income by property
+  - Deductible expenses already uploaded with their IVA credits
+  - Preliminary tax liability
+
+  Review each line for accuracy. If a transaction is missing or incorrect, click **Editar Transacciones** before proceeding.
+
+  ### Confirm and generate
+
+  Click **Calcular y Guardar**. The system produces a calculation record (liquidación) with a unique ID, a timestamp, and the computed payable amount. This record feeds directly into the report generation module.
+</Steps>
+
+## IVA vs. Renta at a Glance
+
+<Tabs>
+  <Tab title="IVA – Cálculo Mensual">
+    IVA is a consumption tax collected from your guests and remitted monthly to Hacienda. Your obligation is the difference between what you collected and what you paid on qualifying inputs.
+
+    **Formula:**
+    ```
+    IVA Repercutido = Σ (Ingresos brutos del mes) × 0.13
+    IVA Soportado   = Σ (IVA en compras con crédito fiscal)
+    IVA a Pagar     = IVA Repercutido − IVA Soportado
+    ```
+
+    **Quick reference:**
+
+    | Monthly Gross Income (₡) | IVA Repercutido (₡) | Typical Credits (₡) | Approx. Payable (₡) |
+    |---|---|---|---|
+    | 200,000 | 26,000 | 3,000 | 23,000 |
+    | 500,000 | 65,000 | 15,000 | 50,000 |
+    | 1,000,000 | 130,000 | 28,000 | 102,000 |
+    | 2,500,000 | 325,000 | 60,000 | 265,000 |
+
+    **Declaration:** Filed on form **D-104** via ATV by the last business day of the month following the period.
+
+    ```json
+    {
+      "liquidacion": {
+        "tipo": "IVA",
+        "periodo": "2026-06",
+        "ingresoBruto": 500000,
+        "ivaRepercutido": 65000,
+        "ivaSoportado": 15000,
+        "ivaAPagar": 50000,
+        "formulario": "D-104"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Renta – Cálculo Anual">
+    Income tax is calculated once per fiscal year on your net taxable income after deductions. Advance payments (pagos a cuenta) made quarterly throughout the year are credited against the final liability.
+
+    **Formula:**
+    ```
+    Renta Bruta       = Σ (Ingresos de alquiler del período fiscal)
+    Deducciones       = Σ (Gastos autorizados y documentados)
+    Renta Neta        = Renta Bruta − Deducciones
+    Impuesto Bruto    = Renta Neta × 0.15
+    Impuesto a Pagar  = Impuesto Bruto − Pagos a Cuenta
+    ```
+
+    **Quick reference:**
+
+    | Annual Net Income (₡) | Tax at 15% (₡) | After ₡250k Advance (₡) |
+    |---|---|---|
+    | 2,000,000 | 300,000 | 50,000 |
+    | 4,800,000 | 720,000 | 470,000 |
+    | 8,000,000 | 1,200,000 | 950,000 |
+    | 12,000,000 | 1,800,000 | 1,550,000 |
+
+    **Declaration:** Filed on form **D-101** via ATV by December 15 each year.
+
+    ```json
+    {
+      "liquidacion": {
+        "tipo": "Renta",
+        "periodoFiscal": "2025-10-01/2026-09-30",
+        "ingresoBruto": 6000000,
+        "deducciones": 1200000,
+        "rentaNetaImponible": 4800000,
+        "tasaAplicada": 0.15,
+        "impuestoBruto": 720000,
+        "pagosACuenta": 250000,
+        "impuestoAPagar": 470000,
+        "formulario": "D-101"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Edge Cases
+
+### Mixed CRC/USD income
+
+If you receive rental payments in US dollars (common on international platforms like Airbnb), FiscalHost Inteligente CR converts each transaction to colones using the **tipo de cambio de referencia del BCCR** on the date the income was received. The conversion is recorded at the transaction level so you always have an auditable CRC equivalent.
+
+```json
+{
+  "transaccion": {
+    "fecha": "2026-06-12",
+    "monedaOriginal": "USD",
+    "montoUSD": 320.00,
+    "tipoCambio": 528.50,
+    "montoCRC": 169120,
+    "fuenteTipoCambio": "BCCR_REFERENCIA"
+  }
+}
+```
+
+### Partial-month rentals
+
+When a reservation spans two calendar months (e.g., check-in June 28, check-out July 3), FiscalHost Inteligente CR attributes income to the **month the stay occurs in** on a pro-rata basis by night count. Three nights in June and two nights in July: 60% of the booking value is assigned to June, 40% to July.
+
+### Platform fees and commissions
+
+Platform service fees (e.g., Airbnb's host service fee of ~3%) are deductible expenses under Renta but do **not** reduce the gross income base for IVA purposes. IVA is calculated on the full amount the guest pays before the platform deducts its fee.
+
+<Warning>
+  **Pagos a cuenta** (advance income tax payments) are due quarterly — in March, June, September, and December — and represent approximately 25% of the prior fiscal year's income tax liability divided by four. Failing to make these payments on time generates interest charges (intereses moratorios) that are added to your D-101 balance. FiscalHost Inteligente CR generates alerts for each pago a cuenta deadline; make sure your **Alertas** module is configured correctly.
+</Warning>
+
+<CardGroup cols={2}>
+  <Card title="Módulo IVA" icon="percent" href="/modules/iva-vat">
+    Detailed reference for the IVA module: configuring credit fiscal items, reviewing monthly summaries, and reconciling with D-104 submissions.
+  </Card>
+  <Card title="Módulo Renta" icon="file-invoice-dollar" href="/modules/income-tax">
+    Full documentation for the income tax module: managing deductions, tracking pagos a cuenta, and preparing the D-101 declaration.
+  </Card>
+</CardGroup>

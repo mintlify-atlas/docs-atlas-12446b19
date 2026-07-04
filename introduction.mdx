@@ -1,0 +1,79 @@
+---
+title: "FiscalHost Inteligente CR: Asistente Fiscal para Anfitriones Vacacionales"
+sidebarTitle: "Introducción"
+description: "Conoce qué es FiscalHost Inteligente CR, a quién está dirigido y cómo automatiza el cumplimiento tributario en Costa Rica."
+---
+
+FiscalHost Inteligente CR es un sistema de gestión fiscal diseñado específicamente para anfitriones de alquileres vacacionales en Costa Rica. Si publicas propiedades en plataformas como Airbnb, Booking.com o VRBO, este sistema centraliza el seguimiento de tus ingresos, automatiza el cálculo de impuestos y te mantiene al día con las obligaciones tributarias del Ministerio de Hacienda — sin necesidad de ser experto en contabilidad fiscal costarricense.
+
+## El problema que resuelve
+
+Operar como anfitrión vacacional en Costa Rica implica cumplir con un marco tributario que combina el IVA (Impuesto al Valor Agregado) y el Impuesto sobre la Renta, cada uno con formularios, periodos y bases imponibles distintos. En la práctica, esto significa:
+
+- Declarar el **IVA al 13%** mensualmente mediante el formulario **D-104** ante la Dirección General de Tributación.
+- Presentar la **declaración de Renta D-101** de forma anual, liquidando el impuesto sobre las utilidades netas generadas por la actividad de hospedaje.
+- Calcular correctamente los **créditos fiscales** aplicables y los **gastos deducibles** permitidos por Hacienda para actividades de alquiler.
+- Gestionar fechas límite trimestrales y anuales que varían según el tipo de contribuyente y el régimen tributario elegido.
+
+Para la mayoría de anfitriones independientes, este proceso es propenso a errores, consume tiempo valioso y conlleva el riesgo de sanciones por declaraciones tardías o incorrectas. FiscalHost Inteligente CR automatiza cada paso de este flujo, desde el registro del ingreso hasta la generación del reporte listo para presentar.
+
+## Capacidades principales
+
+FiscalHost Inteligente CR ofrece las siguientes funcionalidades centrales:
+
+- **Cálculo automático del IVA al 13%** sobre los ingresos de alquiler vacacional, con desglose del impuesto trasladado y el crédito fiscal aplicable.
+- **Cómputo del Impuesto sobre la Renta** según las tablas vigentes de la Ley del Impuesto sobre la Renta de Costa Rica (Ley 7092), con soporte para deducciones de gastos operativos.
+- **Alertas de vencimiento tributario** configurables para los plazos de presentación de D-104 (mensual) y D-101 (anual), evitando multas por mora.
+- **Generación de reportes fiscales** exportables que consolidan ingresos, impuestos calculados y saldos por periodo, listos para entregar a un contador o para uso propio.
+- **Importación de datos desde CSV**, compatible con los formatos de exportación de Airbnb, Booking.com y hojas de cálculo personalizadas, lo que elimina la entrada manual de datos.
+
+## Arquitectura modular M1–M5
+
+El sistema está organizado en cinco módulos funcionales independientes, cada uno con una responsabilidad tributaria delimitada. Esta separación facilita el mantenimiento, las pruebas unitarias y la extensión futura del sistema.
+
+| Módulo | Nombre | Responsabilidad |
+|--------|--------|-----------------|
+| **M1** | IVA | Cálculo del IVA al 13% sobre ingresos de alquiler y preparación de datos para el formulario D-104 |
+| **M2** | Renta | Cálculo del Impuesto sobre la Renta según la Ley 7092 y soporte para la declaración D-101 |
+| **M3** | Alertas | Sistema de notificaciones de vencimientos tributarios mensuales, trimestrales y anuales |
+| **M4** | Reportes | Generación y exportación de reportes fiscales consolidados por periodo |
+| **M5** | Importación | Importación y normalización de datos de ingresos desde archivos CSV |
+
+Cada módulo expone su propia interfaz y puede operar de forma autónoma, aunque el flujo de datos principal conecta M5 → M1/M2 → M4 → M3 para el ciclo completo de procesamiento fiscal.
+
+## Explora más
+
+<CardGroup cols={2}>
+  <Card
+    title="Inicio Rápido"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Configura tu perfil fiscal y ejecuta tu primer cálculo de IVA en menos de 10 minutos.
+  </Card>
+  <Card
+    title="Arquitectura del Sistema"
+    icon="sitemap"
+    href="/architecture"
+  >
+    Conoce el diseño modular M1–M5, el flujo de datos y el pipeline de CI/CD.
+  </Card>
+  <Card
+    title="Módulo IVA (M1)"
+    icon="calculator"
+    href="/modules/iva-vat"
+  >
+    Documentación técnica del módulo de cálculo del IVA al 13% y generación D-104.
+  </Card>
+  <Card
+    title="Reglas Tributarias CR"
+    icon="scale-balanced"
+    href="/reference/tax-rules-cr"
+  >
+    Referencia completa de las tasas, plazos y normativa fiscal costarricense aplicable.
+  </Card>
+</CardGroup>
+
+<Note>
+  FiscalHost Inteligente CR automatiza cálculos y genera reportes de referencia, pero no reemplaza el criterio de un profesional contable. Para situaciones fiscales complejas — como regímenes de simplificado versus tradicional, actividades económicas mixtas o procesos de auditoría por parte de Hacienda — consulta a un Contador Público Autorizado (CPA) inscrito ante el Colegio de Contadores Públicos de Costa Rica.
+</Note>

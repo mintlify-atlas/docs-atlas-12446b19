@@ -1,0 +1,141 @@
+---
+title: "Reports Module: Generate Fiscal Reports for Costa Rica Tax Filings"
+sidebarTitle: "Reportes (M4)"
+description: "The Reports module generates structured fiscal reports covering income, IVA, renta, and deductions, ready for Ministerio de Hacienda submissions."
+---
+
+El módulo de Reportes (M4) de FiscalHost Inteligente CR consolida todos los datos calculados por los módulos M1 (IVA) y M2 (Renta) y los presenta en documentos estructurados que el anfitrión puede revisar, exportar y entregar al Ministerio de Hacienda o conservar como respaldo ante una auditoría. Los reportes se generan bajo demanda para cualquier período histórico registrado en el sistema.
+
+## Reportes disponibles
+
+M4 genera cuatro tipos de reporte, cada uno orientado a una necesidad fiscal específica:
+
+| Reporte | Cobertura temporal | Módulo fuente | Formatos |
+|---|---|---|---|
+| **Resumen mensual de IVA** | Un mes calendario | M1 | PDF, CSV |
+| **Declaración anual de Renta** | Año fiscal (oct – sep) | M2 | PDF, CSV |
+| **Detalle de ingresos por período** | Mensual o anual | M1 + M2 | PDF, CSV |
+| **Resumen de gastos deducibles** | Mensual o anual | M2 | PDF, CSV |
+
+## Contenido de cada reporte
+
+### 1. Resumen mensual de IVA
+
+Genera el detalle completo del período mensual del IVA, alineado con las casillas del formulario D-104.
+
+| Campo | Descripción |
+|---|---|
+| Período | Mes y año del reporte (ej. `Mayo 2026`) |
+| Ingresos totales | Suma de todos los ingresos del período |
+| Ingresos gravados | Ingresos sujetos al 13 % de IVA |
+| Ingresos exentos | Ingresos no gravados |
+| Débito fiscal (casilla 301) | IVA generado sobre ventas |
+| Crédito fiscal (casilla 401) | IVA pagado en compras deducibles |
+| IVA neto a pagar (casilla 501) | Diferencia débito − crédito |
+| Fecha de vencimiento D-104 | Día 15 del mes siguiente |
+| Listado de transacciones | Detalle de cada ingreso con monto e IVA |
+
+### 2. Declaración anual de Renta
+
+Consolida el año fiscal completo para completar el D-101.
+
+| Campo | Descripción |
+|---|---|
+| Año fiscal | `AAAA-AAAA` (ej. `2025-2026`) |
+| Ingresos brutos anuales | Total de ingresos del año |
+| Total de gastos deducibles | Suma de todas las categorías de gasto |
+| Renta neta imponible | `Ingresos brutos − Gastos deducibles` |
+| Impuesto determinado | Calculado con la escala progresiva |
+| Pagos a cuenta realizados | Adelantos trimestrales ya pagados |
+| Saldo a pagar / saldo a favor | Impuesto determinado − Pagos a cuenta |
+| Desglose de gastos por categoría | Mantenimiento, depreciación, seguros, etc. |
+
+### 3. Detalle de ingresos por período
+
+Lista transaccional de todos los ingresos registrados, con clasificación fiscal.
+
+| Campo | Descripción |
+|---|---|
+| Fecha | Fecha de la transacción |
+| Descripción | Nombre de la reserva o servicio |
+| Plataforma | Airbnb, Booking.com, VRBO u otro |
+| Monto bruto | Importe total recibido |
+| Comisión plataforma | Tarifa cobrada por la plataforma |
+| Monto neto | Monto bruto − comisión |
+| Tipo de ingreso | `gravado_iva`, `exento`, `renta_capital` |
+| IVA correspondiente | Monto de IVA de esa transacción |
+
+### 4. Resumen de gastos deducibles
+
+Inventario de todos los gastos registrados que reducen la base imponible de Renta.
+
+| Campo | Descripción |
+|---|---|
+| Fecha | Fecha del gasto |
+| Proveedor | Nombre del emisor de la factura |
+| Categoría | Tipo de gasto (mantenimiento, seguro, etc.) |
+| Monto | Valor del gasto en colones |
+| IVA incluido | IVA de la factura de compra (crédito fiscal) |
+| Número de factura | Consecutivo del comprobante electrónico |
+
+## Cómo generar un reporte
+
+<Steps>
+  <Step title="Seleccionar el tipo de reporte">
+    En el panel principal de FiscalHost, accede a **Reportes → Nuevo Reporte** y selecciona uno de los cuatro tipos disponibles: Resumen IVA, Declaración Renta, Detalle de Ingresos o Gastos Deducibles.
+  </Step>
+  <Step title="Definir el período">
+    Indica el mes o año fiscal que deseas reportar. Para reportes mensuales, elige el mes y año de referencia. Para reportes anuales, selecciona el año fiscal (ej. `2025-2026`). El sistema solo muestra períodos con datos registrados.
+  </Step>
+  <Step title="Revisar los datos calculados">
+    El módulo carga los valores desde M1 y M2 y muestra una vista previa del reporte en pantalla. Verifica que los totales coincidan con tus registros y, si es necesario, regresa a los módulos de origen para corregir alguna transacción antes de exportar.
+  </Step>
+  <Step title="Seleccionar el formato de exportación">
+    Elige entre **PDF** (presentación formal, con logo y encabezados) o **CSV** (para importar a hojas de cálculo o sistemas contables). Ambos formatos están disponibles para todos los tipos de reporte.
+  </Step>
+  <Step title="Descargar y archivar el reporte">
+    Descarga el archivo generado. FiscalHost también guarda una copia en el historial de reportes del período correspondiente, accesible desde la sección **Reportes → Historial**. Se recomienda nombrar el archivo con el formato `TIPO_PERIODO_FECHA_GENERACION` (ej. `IVA_2026-05_20260601.pdf`).
+  </Step>
+</Steps>
+
+## Integración con M1 y M2
+
+M4 no almacena cálculos propios: consume directamente los datos ya procesados por los módulos de IVA y Renta. Esto garantiza que los valores del reporte y de las declaraciones sean siempre consistentes.
+
+```
+M1 (IVA)  ──┐
+             ├──► M4 (Reportes) ──► PDF / CSV
+M2 (Renta) ──┘
+```
+
+Cuando un período aún no tiene todos los datos consolidados (por ejemplo, faltan transacciones del mes), M4 muestra una advertencia de "período incompleto" en la vista previa y permite generar un borrador marcado como provisional.
+
+## Formatos de exportación
+
+### PDF
+El PDF incluye encabezado con nombre del contribuyente, número de cédula/RUC, período, fecha de generación y número de reporte. Cada sección está etiquetada con el nombre del campo correspondiente en el formulario de Hacienda. El pie de página incluye una nota de que el documento es un reporte auxiliar y no reemplaza la presentación oficial a través del portal VET.
+
+### CSV
+El CSV exporta una fila por transacción o por línea de gasto, con las mismas columnas descritas en la sección de contenido. La primera fila contiene los encabezados en español. El separador es coma (`,`) y la codificación es UTF-8 BOM para compatibilidad con Microsoft Excel.
+
+```csv
+fecha,descripcion,plataforma,monto_bruto_crc,comision_crc,monto_neto_crc,tipo_ingreso,iva_crc
+2026-05-03,Reserva fin de semana,Airbnb,120000,15600,104400,gravado_iva,15600
+2026-05-10,Reserva semana completa,Booking.com,350000,45500,304500,gravado_iva,45500
+2026-05-18,Servicio de limpieza adicional,Directo,25000,0,25000,exento,0
+```
+
+<Note>
+Los reportes generados por M4 son **documentos de respaldo** reconocidos por el Ministerio de Hacienda para sustanciar las cifras declaradas en caso de revisión o auditoría. Archívalos junto con las facturas electrónicas originales por un mínimo de **cuatro años**, que es el plazo de prescripción tributaria en Costa Rica según el artículo 51 del Código de Normas y Procedimientos Tributarios.
+</Note>
+
+## Recursos relacionados
+
+<CardGroup cols={2}>
+  <Card title="Módulo de Alertas (M3)" icon="bell" href="/modules/deadline-alerts">
+    Configura recordatorios para saber cuándo generar y presentar cada reporte fiscal.
+  </Card>
+  <Card title="Guía de generación de reportes" icon="file-export" href="/guides/generating-reports">
+    Tutorial paso a paso para exportar, nombrar y archivar reportes fiscales desde FiscalHost.
+  </Card>
+</CardGroup>

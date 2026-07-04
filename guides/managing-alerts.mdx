@@ -1,0 +1,133 @@
+---
+title: "Configure and Manage Tax Deadline Alerts in FiscalHost CR"
+sidebarTitle: "Gestión de Alertas"
+description: "Learn how to configure, customize, and respond to tax deadline alerts in FiscalHost Inteligente CR to stay compliant with Hacienda."
+---
+
+Meeting tax deadlines in Costa Rica is not optional. Hacienda applies automatic penalties for late or missing declarations — including interest charges (intereses moratorios), fixed fines (multas), and in repeated cases, suspension of your RUC registration. FiscalHost Inteligente CR's alerts module monitors every tax obligation tied to your fiscal profile and notifies you with enough advance notice to generate your reports, verify your figures, and file without last-minute pressure.
+
+## Why Alerts Matter
+
+| Penalty Type | Trigger | Amount |
+|---|---|---|
+| **Mora** (interest) | Tax paid after the due date | BCCR base rate + 1% per month on unpaid amount |
+| **Multa por omisión** | Declaration not filed | 50% of the tax due, with a minimum of 3 base salaries (≈ ₡1.4 million) |
+| **Multa por inexactitud** | Incorrect figures on declaration | 25% of the understated tax |
+| **Cierre tributario** | Repeated non-compliance | Temporary business closure ordered by Hacienda |
+
+A single missed D-104 declaration can cost significantly more than the IVA itself. Configuring alerts ensures that no deadline passes unnoticed, even during busy rental seasons.
+
+## Types of Alerts
+
+FiscalHost Inteligente CR generates three categories of alerts for each monitored tax obligation:
+
+### Pre-vencimiento
+
+Sent in advance of the filing deadline. You can configure how many days before the deadline each alert fires — the available options are **15, 7, 3, and 1 days**. Multiple pre-vencimiento alerts can be active simultaneously for the same obligation (e.g., alerts at day 15, day 7, and day 1 all enabled).
+
+### Vencimiento
+
+Sent on the **exact day** the declaration is due. This alert serves as a final same-day reminder if no prior alert has been acted upon. It appears as a high-priority notification in the **Panel de Alertas** dashboard and triggers an email regardless of your other notification settings.
+
+### Post-vencimiento
+
+Sent when a deadline has passed and the obligation has **not been marked as filed** in FiscalHost. The system sends a post-vencimiento alert at 1 day overdue, 3 days overdue, and 7 days overdue. These alerts include a direct link to the ATV portal and the corresponding report so you can file immediately.
+
+## Default Alert Schedule
+
+The following table shows the default alert configuration that FiscalHost Inteligente CR applies when you first set up the alerts module. You can customize all values per obligation.
+
+| Obligation | Form | Frequency | Default Pre-alerts (days before) | Vencimiento | Post-vencimiento |
+|---|---|---|---|---|---|
+| IVA mensual | D-104 | Monthly | 7, 3, 1 | ✓ | Day 1, 3, 7 |
+| Renta anual | D-101 | Annual | 15, 7, 3, 1 | ✓ | Day 1, 3, 7 |
+| Pago a cuenta Q1 | — | March | 15, 7, 3 | ✓ | Day 1, 3 |
+| Pago a cuenta Q2 | — | June | 15, 7, 3 | ✓ | Day 1, 3 |
+| Pago a cuenta Q3 | — | September | 15, 7, 3 | ✓ | Day 1, 3 |
+| Pago a cuenta Q4 | — | December | 15, 7, 3 | ✓ | Day 1, 3 |
+| Resumen de retenciones | D-151 | Annual (Feb) | 15, 7, 3, 1 | ✓ | Day 1, 3, 7 |
+
+## Configuring Alerts
+
+<Steps>
+  ### Go to Configuración → Alertas
+
+  From the **Panel Principal**, click **Configuración** in the left sidebar, then select **Alertas** from the submenu. The Alertas configuration screen lists every tax obligation associated with your fiscal profile.
+
+  ### Select which obligations to monitor
+
+  Each row in the list corresponds to a tax obligation. Toggle on the obligations you want FiscalHost to track:
+
+  - ✅ **IVA Mensual (D-104)** — recommended for all hosts in Régimen Tradicional.
+  - ✅ **Renta Anual (D-101)** — required for all hosts filing annual income tax.
+  - ✅ **Pagos a Cuenta** — quarterly advance payments; highly recommended (see tip below).
+  - ☑ **D-151 (Resumen de retenciones)** — required only if you make payments to third parties subject to withholding (e.g., employees, contractors above ₡1 million/month).
+
+  Obligations that are not applicable to your fiscal profile (e.g., Régimen Simplificado hosts do not file D-101 the same way) will be grayed out automatically.
+
+  ### Set advance notification days
+
+  For each enabled obligation, click the **Editar** icon to expand its configuration panel. Under **Alertas previas**, check the boxes for the days-in-advance you want notifications:
+
+  - **15 días** — ideal for annual declarations (Renta, D-151) that require more preparation time.
+  - **7 días** — recommended for monthly IVA filings.
+  - **3 días** — a reliable second reminder for all obligations.
+  - **1 día** — final same-day-minus-one alert for any obligations where you want maximum lead time.
+
+  You may enable multiple advance alerts for a single obligation.
+
+  ### Choose notification channels
+
+  Under **Canales de notificación**, select how you want to receive each alert:
+
+  - **In-app** — alerts appear in the bell icon notification center (🔔) at the top of the FiscalHost dashboard. Always enabled; cannot be disabled.
+  - **Correo electrónico** — alerts are sent to the email address registered in your fiscal profile. Toggle on/off per obligation and per advance day as needed.
+
+  Ensure your fiscal email address is up to date in **Configuración → Perfil Fiscal** before saving alert settings.
+
+  ### Save and test notification
+
+  Click **Guardar Configuración de Alertas** at the bottom of the page. To verify the configuration is working, click **Enviar Alerta de Prueba** next to any obligation. FiscalHost will send a test notification through all enabled channels within one minute. Check your email inbox and the in-app notification center to confirm delivery.
+</Steps>
+
+## Alert Status Dashboard
+
+Navigate to **Alertas → Panel de Alertas** to see a real-time summary of all your tax obligations and their current status:
+
+| Status | Description | Badge Color |
+|---|---|---|
+| **Pendiente** | Deadline is more than 15 days away; no action required yet. | Gray |
+| **Próximo** | Deadline is within your configured pre-alert window. | Yellow |
+| **Hoy** | Deadline is today. | Orange |
+| **Vencido** | Deadline has passed and the obligation has not been marked as filed. | Red |
+| **Completado** | Obligation has been marked as filed with a confirmation number. | Green |
+
+The dashboard displays obligations in chronological order by due date. Click any row to open the obligation detail view, which shows the computed tax amount, the associated report, and a direct link to the corresponding ATV declaration form.
+
+## Marking an Obligation as Filed
+
+Once you have submitted your declaration on ATV and received a confirmation number, return to FiscalHost and mark the obligation as completed:
+
+1. In **Panel de Alertas**, locate the obligation row and click **Marcar como Declarado**.
+2. Enter the **número de confirmación** provided by ATV.
+3. Enter the **fecha de presentación** (filing date) and the **monto pagado** (amount paid, if a payment was required).
+4. Click **Confirmar**.
+
+The obligation status changes to **Completado** (green), the alert is silenced, and the record is saved to **Historial de Declaraciones** with full audit trail.
+
+<Warning>
+  FiscalHost Inteligente CR alerts are based on standard Hacienda filing calendars and the configuration in your profile. **Do not rely solely on these alerts to know your actual deadlines.** Hacienda occasionally modifies deadlines for specific periods (for example, extensions granted after natural disasters or system failures). Always verify the current filing calendar directly on the [ATV portal](https://www.hacienda.go.cr/ATV/) or with your certified public accountant (contador público autorizado) before each filing period.
+</Warning>
+
+<Tip>
+  For quarterly **pagos a cuenta**, set alerts at both **15 days** and **7 days** in advance. These payments are easy to overlook because they fall on irregular dates throughout the year and do not require uploading a formal declaration — just a bank transfer with the correct reference code. Having two advance alerts gives you enough time to calculate the correct amount and initiate the transfer before the deadline.
+</Tip>
+
+<CardGroup cols={2}>
+  <Card title="Módulo de Alertas" icon="bell" href="/modules/deadline-alerts">
+    Full reference for the deadline alerts module, including API webhooks and integration with external calendar apps.
+  </Card>
+  <Card title="Generar Reportes" icon="file-lines" href="/guides/generating-reports">
+    Learn how to generate IVA and income tax reports so you are ready to file as soon as an alert fires.
+  </Card>
+</CardGroup>
